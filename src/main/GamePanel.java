@@ -81,7 +81,14 @@ public class GamePanel extends JPanel implements Runnable{
 	}
 	
 	public void update() {
-		player.update();
+//		
+//		for (int i = 0; i < 12; i++) {
+//			for (int j = 0; j < 16; j++) {
+//				System.out.print(tileManager.mapdemo[i][j]+ " ");
+//			}
+//			System.out.println();
+//		}
+		player.update(tileManager.mapdemo);
 	}
 	
 //	draw player in screen
@@ -89,9 +96,10 @@ public class GamePanel extends JPanel implements Runnable{
 		super.paintComponent(g);
 		
 		Graphics2D graphics2d = (Graphics2D) g;
-		tileManager.draw(graphics2d);
 		
+		tileManager.draw(graphics2d);
 		player.draw(graphics2d);
+		
 		graphics2d.dispose();
 	}
 	

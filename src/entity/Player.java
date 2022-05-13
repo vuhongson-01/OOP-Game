@@ -46,26 +46,38 @@ public class Player extends Entity{
 			e.printStackTrace();
 		}
 	}
-	public void update() {
+	public void update(int [][] map) {
 		if (keyHandler.upPressed == true) {
 			direction = "up";
 			spriteCounter++;
-			y -= speed;
+//			*notice: 4 vertexes
+			if (map[(y - speed) / 48][x / 48] == 1 && map[(y - speed) / 48][(x + 48) / 48] == 1)
+				y -= speed;
+			System.out.println("^"+x+" "+y);
 		}
 		else if (keyHandler.downPressed == true) {
 			direction = "down";
 			spriteCounter++;
-			y += speed;
+//			*notice: 4 vertexes
+			if (map[(y + speed + 48) / 48][x / 48] == 1 && map[(y + speed + 48) / 48][(x + 48) / 48] == 1)
+				y += speed;
+			System.out.println("v"+x+" "+y);
 		}
 		else if (keyHandler.leftPressed == true) {
 			direction = "left";
 			spriteCounter++;
-			x -= speed;
+//			*notice: 4 vertexes
+			if (map[y/48][(x - speed) / 48] == 1 && map[(y + 48)/48][(x - speed) / 48] == 1)
+				x -= speed;
+			System.out.println("<"+x+" "+y);
 		}
 		else if (keyHandler.rightPressed == true) {
 			direction = "right";
 			spriteCounter++;
-			x += speed;
+//			*notice: 4 vertexes
+			if (map[y / 48][(x + speed + 48) / 48] == 1 && map[(y + 48) / 48][(x + speed + 48) / 48] == 1)
+				x += speed;
+			System.out.println(">"+x+" "+y);
 		}
 	
 		if (spriteCounter > 15) {   //15 or any number if liking

@@ -8,54 +8,38 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
+import map.MapDemo;
 
 public class TileManager {
 
 	GamePanel gp;
 	Tile[] tiles;
+	int level;
 //	save map data to a text file!!!
-	int[][] mapdemo;
+	public int[][] mapdemo;
 	
 	public TileManager(GamePanel gamePanel, int level) {
 		this.gp = gamePanel;
+		this.level = level;
 		tiles = new Tile[10];	
 		
 		getTilesImage();
 		
 		mapdemo = new int[gp.maxScreenRow][gp.maxScreenCol];
-		getMapFromTextFile(1);
+		
+		MapDemo mapDemo = new MapDemo();
+		getMap(mapDemo);
 	}
 	
-	private void getMapFromTextFile(int level) {
+	private void getMap(MapDemo map) {
 		try {
 			if (level == 1) {
-				InputStream iStream = getClass().getResourceAsStream("map/mapdemo.txt");
-				BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-				
-				int col = 0;
-				int row = 0;
-				
-				while (row < gp.maxScreenRow) {
-					String lineString = br.readLine();
-					while (col < gp.maxScreenCol) {
-						String mapElementCodesString[] = lineString.split(" ");
-						
-						int mapElementCode = Integer.parseInt(mapElementCodesString[col]); 
-						mapdemo[row][col] = mapElementCode;
-						col++;
-						System.out.print(mapElementCode + " ");
-					}
-					System.out.println();
-					row++;
-					col = 0;
-				}
-				br.close();
+				mapdemo = map.map0;
+				}	
 			}
-		} catch (Exception e) {
+		catch (Exception e) {
 			// TODO: handle exception
 		}
-	
-		
 	}
 
 	public void getTilesImage() {
