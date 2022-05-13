@@ -10,6 +10,7 @@ public class Main {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(false);
 
+//		JFrame, JPanel
 //		create game state
 		GamePanel gamePanel = new GamePanel();
 		window.add(gamePanel);

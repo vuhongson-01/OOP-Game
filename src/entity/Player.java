@@ -32,7 +32,6 @@ public class Player extends Entity{
 	}
 
 	public void getPlayerImage() {
-		
 		try {
 			up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
 			up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
@@ -46,7 +45,7 @@ public class Player extends Entity{
 			e.printStackTrace();
 		}
 	}
-	public void update(int [][] map) {
+	public void update(int [][] map) { // update player's position
 		if (keyHandler.upPressed == true) {
 			direction = "up";
 			spriteCounter++;
