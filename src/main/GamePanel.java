@@ -8,11 +8,17 @@ import java.util.Currency;
 
 import javax.swing.JPanel;
 
-import entity.Player;
+import entity.Fighter;
 import tile.TileManager;
+
+/**
+ * @author vuhongsonchv1619gmail.com
+ * This class operate the game play
+ */
 
 public class GamePanel extends JPanel implements Runnable{
 
+//	Set up size of tile, scale, screen,..
 	final int originalTileSize = 16; //16x16
 	final int scale = 3;
 	public final int tileSize = originalTileSize * scale; //48x48
@@ -21,17 +27,31 @@ public class GamePanel extends JPanel implements Runnable{
 	final int screenWidth = tileSize * maxScreenCol;	//768px
 	final int screenHeight = tileSize * maxScreenRow;	//576px
 	
+//	Create object
 	Thread gameThread;
-	KeyHandler keyHandler = new KeyHandler();
-	Player player; 
+	KeyHandler keyHandler = new KeyHandler(this);
+	TileManager tileManager = new TileManager(this, 1);
+	Fighter player; 
+	public UI ui = new UI(this);
+	
 	
 //	player default position
 	int playerX = 100;
 	int playerY = 100;
 	int playerSpeed = 4;
 	
+	
+//	setup FPS
 	int FPS = 60;
-	TileManager tileManager = new TileManager(this, 1);
+	
+	
+//	GAME STATE
+	public int gameState;
+	public final int titleState = 0;
+	public final int playState = 1;
+	public final int pauseState = 2;
+	public final int guideState = 3;
+	
 	
 	public GamePanel() {
 //	setup game panel
@@ -41,15 +61,20 @@ public class GamePanel extends JPanel implements Runnable{
 		this.addKeyListener(keyHandler);
 		this.setFocusable(true);	
 //	create player
-		player = new Player(this, keyHandler);
+		player = new Fighter(this, keyHandler);
 	}
 
+	
 	public void startGameThread() {
 		gameThread = new Thread(this);
+		gameState = titleState;
 		gameThread.start();
 	}
 	
-	public void run() {
+	
+	public void run() { 
+// 		Setup FPS = 60
+		
 		double drawInterval = 1e9/FPS;
 		double delta = 0;
 		double lastTime = System.nanoTime();
@@ -63,6 +88,7 @@ public class GamePanel extends JPanel implements Runnable{
  			delta += (currentTime - lastTime) / drawInterval;
  			timer += (currentTime - lastTime);
  			lastTime = currentTime;
+ 			
  			if (delta >= 1) {
 	//			1 UPDATE: update information such as character position
 				update();
@@ -73,33 +99,44 @@ public class GamePanel extends JPanel implements Runnable{
 			}
  			
  			if (timer >= 1e9) {
-// 				System.out.println("FPS: " + drawCount);
  				drawCount = 0;
  				timer = 0;
  			}
 		}
 	}
 	
+	
 	public void update() {
-//		
-//		for (int i = 0; i < 12; i++) {
-//			for (int j = 0; j < 16; j++) {
-//				System.out.print(tileManager.mapdemo[i][j]+ " ");
-//			}
-//			System.out.println();
-//		}
-		player.update(tileManager.mapdemo);
+		if (gameState == playState)
+			player.update(tileManager.map);
 	}
 	
-//	draw player in screen
+	
+//	draw object in screen
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
 		Graphics2D graphics2d = (Graphics2D) g;
+
+//		TITLE STATE
+		if (gameState == titleState) {
+			ui.draw(graphics2d);
+		}
 		
-		tileManager.draw(graphics2d);
-		player.draw(graphics2d);
+		if (gameState == playState) {
+	//		TILE		
+			tileManager.draw(graphics2d);
+			
+	//		PLAYER
+			player.draw(graphics2d);
+			
+	//		UI
+			ui.draw(graphics2d);		
+		}
 		
+		if (gameState == guideState) {
+			ui.draw(graphics2d);
+		}
 		graphics2d.dispose();
 	}
 	
