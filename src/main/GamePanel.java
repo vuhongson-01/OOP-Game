@@ -108,7 +108,7 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void update() {
 		if (gameState == playState)
-			player.update(tileManager.map);
+			player.update(tileManager.mapdemo);
 	}
 	
 	
