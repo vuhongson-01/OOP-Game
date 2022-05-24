@@ -10,6 +10,10 @@ public class KeyHandler implements KeyListener{
 	public boolean upPressed, downPressed, leftPressed, rightPressed, attack;
 	GamePanel gp;
 	
+	public boolean Askill1IsActive = false;
+	public boolean Askill2IsActive = false;
+	public boolean Askill3IsActive = false;
+	
 	public KeyHandler(){
 		// TODO Auto-generated constructor stub
 	}
@@ -86,6 +90,15 @@ public class KeyHandler implements KeyListener{
 		if (code == KeyEvent.VK_F) {
 			attack = true;
 		}
+		if (code == KeyEvent.VK_1) {
+			Askill1IsActive = true;
+		}
+		if (code == KeyEvent.VK_2) {
+			Askill2IsActive = true;
+		}
+		if (code == KeyEvent.VK_3) {
+			Askill3IsActive = true;
+		}
 	}
 
 	@Override
@@ -107,6 +120,15 @@ public class KeyHandler implements KeyListener{
 		}
 		if (code == KeyEvent.VK_F) {
 			attack = false;
+		}
+		if (code == KeyEvent.VK_1) {
+			Askill1IsActive = false;
+		}
+		if (code == KeyEvent.VK_2) {
+			Askill2IsActive = false;
+		}
+		if (code == KeyEvent.VK_3) {
+			Askill3IsActive = false;
 		}
 		
 	}

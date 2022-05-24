@@ -15,10 +15,13 @@ public class Entity {
 	public int speed;
 		
 	public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-	public BufferedImage leftAttack1, leftAttack2, rightAttack1, rightAttack2, topAttack1, topAttack2, downAttack1, downAttack2, skillAttack;
+	public BufferedImage leftAttack1, leftAttack2, rightAttack1, rightAttack2, upAttack1, upAttack2, downAttack1, downAttack2, skillAttack;
 	public String action, preAction;
 	
+	public Rectangle solidArea = new Rectangle(0, 0, 48, 48); 
 	public Rectangle attackArea = new Rectangle(0, 0, 0, 0); 
+	
+	
 	
 	int screenX, screenY;
 	public int spriteCounter = 0;
@@ -43,7 +46,7 @@ public class Entity {
 		BufferedImage image = null;
 		
 		try {
-			image = ImageIO.read(getClass().getResourceAsStream("/player/" + imageName + ".png"));
+			image = ImageIO.read(getClass().getResourceAsStream(imageName + ".png"));
 			image = uTool.scaleImage(image, width, height);
 			
 		} catch (IOException e) {

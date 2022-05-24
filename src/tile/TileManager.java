@@ -1,6 +1,7 @@
 package tile;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,7 @@ public class TileManager {
 	GamePanel gp;
 	Tile[] tiles;
 	int level;
+//	BufferedImage pointboard;
 //	save map data to a text file!!!
 	public int[][] mapdemo;
 	
@@ -48,7 +50,8 @@ public class TileManager {
 	public void getTilesImage() {
 		setup(0, "water", true);
 		setup(1, "grass", false);
-		setup(2, "wall", true);			
+		setup(2, "wall", true);	
+		
 	}
 	
 	public void setup(int index, String imagePath, boolean collision) {
@@ -60,6 +63,7 @@ public class TileManager {
 			tiles[index].image = uTool.scaleImage(tiles[index].image, gp.tileSize, gp.tileSize);
 			tiles[index].collision = collision;
 			
+//			pointboard = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imagePath + ".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -71,6 +75,7 @@ public class TileManager {
 				graphics2d.drawImage(tiles[mapdemo[row][col]].image, col * gp.tileSize, row * gp.tileSize, gp.tileSize, gp.tileSize, null);
 			}
 		}
+		
 		
 	}
 
