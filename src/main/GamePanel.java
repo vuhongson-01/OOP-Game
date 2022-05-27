@@ -11,7 +11,8 @@ import java.lang.Math;
 import javax.swing.JPanel;
 
 import entity.Fighter;
-import entity.Monster;
+import entity.Boss1;
+import entity.Entity;
 import tile.TileManager;
 
 /**
@@ -35,7 +36,7 @@ public class GamePanel extends JPanel implements Runnable{
 	KeyHandler keyHandler = new KeyHandler(this);
 	TileManager tileManager = new TileManager(this, 1);
 	Fighter player;
-	Monster monster;
+	Boss1 monster;
 	public UI ui = new UI(this);
 	
 	
@@ -66,7 +67,7 @@ public class GamePanel extends JPanel implements Runnable{
 		this.setFocusable(true);	
 //	create player
 		player = new Fighter(this, keyHandler);
-		monster = new Monster(this);
+		monster = new Boss1(this);
 	}
 
 	
@@ -115,24 +116,37 @@ public class GamePanel extends JPanel implements Runnable{
 		if (gameState == playState) {
 			player.update(tileManager.mapdemo);
 			monster.update(tileManager.mapdemo);
-			touching(player, monster);
+			sensing(player, monster);
 		}
 			
 	}
 	
 	
-	private void touching(Fighter p, Monster m) {
-		int d = (p.selfLocX - m.selfLocX) * (p.selfLocX - m.selfLocX) + (p.selfLocY - m.selfLocY) * (p.selfLocY - m.selfLocY);
-		if (d < tileSize * tileSize)
-			{
-			if (f % 60 == 0)
+	private void sensing(Fighter p, Boss1 m) {
+		int d = (p.selfCenterX - m.selfCenterX) * (p.selfCenterX - m.selfCenterX) + (p.selfCenterY - m.selfCenterY) * (p.selfCenterY - m.selfCenterY);
+		if (d < tileSize * tileSize){
+			m.attacking = true;
+			
+			if (m.f_attack == 0)
+				m.f_attack = 1;
+			
+			if (p.selfCenterX < m.selfCenterX) m.directionAttack = 180;
+			else m.directionAttack = 0;
+
+			if (f % 120 == 0)
 				p.hp -= (int)((float)(m.attack * (100 - p.defense) / 100));
 			f++;
-			}
-		else {
-			f = 0;
-//			if ()
 		}
+		
+		else {
+			if (m.f_attack >= 120) {
+				m.attacking = false;
+				m.f_attack = 0;
+			}
+				
+		}
+		
+//		if (intersec(p.selfAreaX1, p.selfAreaY1, p.selfAreaX2, p.selfAreaY2))
 	}
 
 

@@ -6,22 +6,13 @@ import java.awt.image.BufferedImage;
 import main.GamePanel;
 import main.KeyHandler;
 
-public class Monster extends Entity{
+public class Monster2 extends Entity{
 
-	
-	GamePanel gp;
-
-	public int hp, mp, attack, defense;
-	private final int defaultHP = 1000;
+	private final int defaultHP = 100;
 	private final int defaultMP = 100;
-	BufferedImage monster1, monster2;
-	
-	public int selfLocX;
-	public int selfLocY;
-	
-	int f = 0;
-	
-	public Monster(GamePanel gp) {
+	BufferedImage monster1, monster2, shoot, attacked;
+
+	public Monster2(GamePanel gp) {
 		this.gp = gp;
 		
 		setDefaultValue();
@@ -34,8 +25,8 @@ public class Monster extends Entity{
 		y = 100;
 		
 //		location of self in screen
-		selfLocX = x + gp.tileSize;
-		selfLocY = y + gp.tileSize;
+		selfCenterX = x + gp.tileSize;
+		selfCenterY = y + gp.tileSize;
 		
 		hp = defaultHP;
 //		hp = 250;
@@ -49,6 +40,9 @@ public class Monster extends Entity{
 	public void getMonsterImage() {
 		monster1 = setup("/monster/greenslime_down_1", gp.tileSize, gp.tileSize);
 		monster2 = setup("/monster/greenslime_down_2", gp.tileSize, gp.tileSize);
+		shoot = setup("/monster/monsterShoot", gp.tileSize, gp.tileSize);
+		attacked = setup("/monster/monster_attacked", gp.tileSize, gp.tileSize);
+		
 	}
 	
 	public void update(int [][] map) { // update player's position
@@ -61,6 +55,11 @@ public class Monster extends Entity{
 		}
 		
 		x += speed;
+		
+		selfAreaX1 = x + 3;
+		selfAreaY1 = y + 18;
+		selfAreaX2 = x + 45;
+		selfAreaY2 = y + 48;
 	}
 
 	private boolean isBlocked(int[][] map, int x, int y) {
@@ -76,9 +75,10 @@ public class Monster extends Entity{
 		return false;
 	}
 	
+
 	public void draw(Graphics2D graphics2d) {
-		selfLocX = x + gp.tileSize;
-		selfLocY = y + gp.tileSize;
+		selfCenterX = x + gp.tileSize;
+		selfCenterY = y + gp.tileSize;
 		if (f % 15 < 10) graphics2d.drawImage(monster1, x, y, null);
 		else {
 			graphics2d.drawImage(monster2, x, y, null);

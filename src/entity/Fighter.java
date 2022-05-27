@@ -15,19 +15,12 @@ import main.UtilityTool;
 
 public class Fighter extends Entity{
 
-	
-	GamePanel gp;
 	KeyHandler keyHandler;
 	int tileSize; 
-	public int hp, mp, attack, defense;
+	
 	private final int defaultHP = 1000;
 	private final int defaultMP = 100;
 	BufferedImage pointboard, skill2, skill1, skill3, skillbar, impossible;
-	
-	public int selfLocX;
-	public int selfLocY;
-	
-	int f = 0;
 	
 	private int skill1waiting = 0; //pro-active skill - 10s waiting
 	private int skill1EffectiveTime = 3*60; //during 3s * 60FPS effective
@@ -45,10 +38,7 @@ public class Fighter extends Entity{
 		this.gp = gp;
 		this.keyHandler = keyHandler;
 		tileSize = gp.tileSize;
-		
-//		attackArea.width = 36;
-//		attackArea.height = 36;
-		
+
 		setDefaultValue();
 		getPlayerImage();
 	}
@@ -60,15 +50,15 @@ public class Fighter extends Entity{
 		y = 100;
 		
 //		location of self in screen
-		selfLocX = x + gp.tileSize;
-		selfLocY = y + gp.tileSize;
+		selfCenterX = x + gp.tileSize;
+		selfCenterY = y + gp.tileSize;
 		
 		hp = defaultHP;
 //		hp = 250;
 		mp = defaultMP;
 		attack = 15;
 		defense = 10;
-		speed = 3;
+		speed = 2;
 		action = "down";
 	}
 
@@ -193,12 +183,19 @@ public class Fighter extends Entity{
 		switch (action) {
 		case "up": {
 			if (attacking == false) {
+				
 				if (spriteNum == 1) { image = up1;}
 				if (spriteNum == 2) { image = up2;}		
 			}
 			if (attacking == true) {
 				if (spriteNum == 1) { image = upAttack1;}
-				if (spriteNum == 2) { image = upAttack2;}
+				if (spriteNum == 2) { 
+					damageAreaX1 = x + 24;
+					damageAreaY1 = y + 24;
+					damageAreaX2 = x + 36;
+					damageAreaY2 = y + 48;
+					image = upAttack2;
+				}
 			}
 			break;
 		}
@@ -209,7 +206,13 @@ public class Fighter extends Entity{
 			}
 			if (attacking == true) {
 				if (spriteNum == 1) { image = downAttack1;}
-				if (spriteNum == 2) { image = downAttack2;}
+				if (spriteNum == 2) { 
+					damageAreaX1 = x + 18;
+					damageAreaY1 = y + 48;
+					damageAreaX2 = x + 30;
+					damageAreaY2 = y + 24;
+					image = downAttack2;
+				}
 			}
 			break;
 		}
@@ -220,7 +223,13 @@ public class Fighter extends Entity{
 			}
 			if (attacking == true) {
 				if (spriteNum == 1) { image = leftAttack1;}
-				if (spriteNum == 2) { image = leftAttack2;}
+				if (spriteNum == 2) { 
+					damageAreaX1 = x + 24;
+					damageAreaY1 = y + 24;
+					damageAreaX2 = x + 54;
+					damageAreaY2 = y + 36;
+					image = leftAttack2;
+				}
 			}
 			break;
 		}
@@ -231,7 +240,13 @@ public class Fighter extends Entity{
 			}
 			if (attacking == true) {
 				if (spriteNum == 1) { image = rightAttack1;}
-				if (spriteNum == 2) { image = rightAttack2;}
+				if (spriteNum == 2) { 
+					damageAreaX1 = x + 42;
+					damageAreaY1 = y + 24;
+					damageAreaX2 = x + 72;
+					damageAreaY2 = y + 42;
+					image = rightAttack2;
+				}
 			}
 			break;
 		}
@@ -241,18 +256,18 @@ public class Fighter extends Entity{
 		
 		if (skill1EffectiveTime == 3*60 || (skill1EffectiveTime < 0 && skill1waiting != 0)) {
 			if (image == leftAttack1 || image == leftAttack2) {
-				selfLocX = x + gp.tileSize*3/2;
-				selfLocY = y + gp.tileSize/2;
+				selfCenterX = x + gp.tileSize*3/2;
+				selfCenterY = y + gp.tileSize/2;
 				graphics2d.drawImage(image, x - tileSize, y, null);
 				}
 			else if (image == upAttack1 || image == upAttack2){
-				selfLocX = x + gp.tileSize/2;
-				selfLocY = y + gp.tileSize*3/2;
+				selfCenterX = x + gp.tileSize/2;
+				selfCenterY = y + gp.tileSize*3/2;
 				graphics2d.drawImage(image, x, y - tileSize, null);
 			}
 			else {
-				selfLocX = x + gp.tileSize/2;
-				selfLocY = y + gp.tileSize/2;
+				selfCenterX = x + gp.tileSize/2;
+				selfCenterY = y + gp.tileSize/2;
 				graphics2d.drawImage(image, x, y, null);
 	//			graphics2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 			}			
@@ -266,7 +281,7 @@ public class Fighter extends Entity{
 		graphics2d.drawImage(skillbar, 0, gp.screenHeight - gp.tileSize, null);
 		
 		graphics2d.drawImage(skill1, 0, gp.screenHeight - gp.tileSize, null);
-		if (mp < skill1MP || skill2waiting != 0) {
+		if (mp < skill1MP || skill1waiting != 0) {
 			graphics2d.drawImage(impossible, 0, gp.screenHeight - gp.tileSize, null);
 		}
 		
@@ -285,23 +300,43 @@ public class Fighter extends Entity{
 			
 			if (skill1EffectiveTime >= 0) {
 				if (skill1EffectiveTime % 12 < 3) {
-					selfLocX = x + gp.tileSize*3/2;
-					selfLocY = y + gp.tileSize/2;
+					selfCenterX = x + gp.tileSize*3/2;
+					selfCenterY = y + gp.tileSize/2;
+					
+					damageAreaX1 = x + 24;
+					damageAreaY1 = y + 24;
+					damageAreaX2 = x + 54;
+					damageAreaY2 = y + 36;
 					graphics2d.drawImage(leftAttack2, x - tileSize, y, null);
 				}
 				else if (skill1EffectiveTime % 12 < 6){
-					selfLocX = x + gp.tileSize/2;
-					selfLocY = y + gp.tileSize*3/2;
+					selfCenterX = x + gp.tileSize/2;
+					selfCenterY = y + gp.tileSize*3/2;
+					
+					damageAreaX1 = x + 24;
+					damageAreaY1 = y + 24;
+					damageAreaX2 = x + 36;
+					damageAreaY2 = y + 48;
 					graphics2d.drawImage(upAttack2, x, y - tileSize, null);
 				}
 				else if (skill1EffectiveTime % 12 < 9) {
-					selfLocX = x + gp.tileSize/2;
-					selfLocY = y + gp.tileSize/2;
+					selfCenterX = x + gp.tileSize/2;
+					selfCenterY = y + gp.tileSize/2;
+					
+					damageAreaX1 = x + 42;
+					damageAreaY1 = y + 24;
+					damageAreaX2 = x + 72;
+					damageAreaY2 = y + 42;
 					graphics2d.drawImage(rightAttack2, x, y, null);
 				}
 				else{
-					selfLocX = x + gp.tileSize/2;
-					selfLocY = y + gp.tileSize/2;
+					selfCenterX = x + gp.tileSize/2;
+					selfCenterY = y + gp.tileSize/2;
+					
+					damageAreaX1 = x + 18;
+					damageAreaY1 = y + 48;
+					damageAreaX2 = x + 30;
+					damageAreaY2 = y + 24;
 					graphics2d.drawImage(downAttack2, x, y, null);
 				}
 			}
