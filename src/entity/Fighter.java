@@ -27,7 +27,7 @@ public class Fighter extends Entity{
 	private int skill1MP = 40; //skill1 need 60 MP
 	
 	private int skill2waiting = 0; //passive skill - 7s waiting
-	private int skill2EffectiveTime = 3; //during 3s effective
+	private int skill2EffectiveTime = 3*60; //during 3s effective
 	private int skill2MP = 40; //skill2 need 40 MP
 	
 	private int skill3waiting = 0;  //passive skill - 12s waiting
@@ -50,8 +50,11 @@ public class Fighter extends Entity{
 		y = 100;
 		
 //		location of self in screen
-		selfCenterX = x + gp.tileSize;
-		selfCenterY = y + gp.tileSize;
+		selfCenterX = x + gp.tileSize/2;
+		selfCenterY = y + gp.tileSize/2;
+		
+		selfArea = new int [4];
+		damageArea = new int [4];
 		
 		hp = defaultHP;
 //		hp = 250;
@@ -59,6 +62,7 @@ public class Fighter extends Entity{
 		attack = 15;
 		defense = 10;
 		speed = 2;
+		
 		action = "down";
 	}
 
@@ -94,10 +98,10 @@ public class Fighter extends Entity{
 	public void update(int [][] map) { // update player's position
 		
 		f++;
+		
 		if (f % 50 == 0) {
 			if (mp < 100)
 				mp++;
-			
 			f = 0;
 		}
 		
@@ -190,10 +194,10 @@ public class Fighter extends Entity{
 			if (attacking == true) {
 				if (spriteNum == 1) { image = upAttack1;}
 				if (spriteNum == 2) { 
-					damageAreaX1 = x + 24;
-					damageAreaY1 = y + 24;
-					damageAreaX2 = x + 36;
-					damageAreaY2 = y + 48;
+					damageArea[0] = x + 24;
+					damageArea[1] = y + 24;
+					damageArea[2] = x + 36;
+					damageArea[3] = y + 48;
 					image = upAttack2;
 				}
 			}
@@ -207,10 +211,10 @@ public class Fighter extends Entity{
 			if (attacking == true) {
 				if (spriteNum == 1) { image = downAttack1;}
 				if (spriteNum == 2) { 
-					damageAreaX1 = x + 18;
-					damageAreaY1 = y + 48;
-					damageAreaX2 = x + 30;
-					damageAreaY2 = y + 24;
+					damageArea[0] = x + 18;
+					damageArea[1] = y + 48;
+					damageArea[2] = x + 30;
+					damageArea[3] = y + 24;
 					image = downAttack2;
 				}
 			}
@@ -224,10 +228,10 @@ public class Fighter extends Entity{
 			if (attacking == true) {
 				if (spriteNum == 1) { image = leftAttack1;}
 				if (spriteNum == 2) { 
-					damageAreaX1 = x + 24;
-					damageAreaY1 = y + 24;
-					damageAreaX2 = x + 54;
-					damageAreaY2 = y + 36;
+					damageArea[0] = x + 24;
+					damageArea[1] = y + 24;
+					damageArea[2] = x + 54;
+					damageArea[3] = y + 36;
 					image = leftAttack2;
 				}
 			}
@@ -241,10 +245,10 @@ public class Fighter extends Entity{
 			if (attacking == true) {
 				if (spriteNum == 1) { image = rightAttack1;}
 				if (spriteNum == 2) { 
-					damageAreaX1 = x + 42;
-					damageAreaY1 = y + 24;
-					damageAreaX2 = x + 72;
-					damageAreaY2 = y + 42;
+					damageArea[0] = x + 42;
+					damageArea[1] = y + 24;
+					damageArea[2] = x + 72;
+					damageArea[3] = y + 42;
 					image = rightAttack2;
 				}
 			}
@@ -303,40 +307,40 @@ public class Fighter extends Entity{
 					selfCenterX = x + gp.tileSize*3/2;
 					selfCenterY = y + gp.tileSize/2;
 					
-					damageAreaX1 = x + 24;
-					damageAreaY1 = y + 24;
-					damageAreaX2 = x + 54;
-					damageAreaY2 = y + 36;
+					damageArea[0] = x + 24;
+					damageArea[1] = y + 24;
+					damageArea[2] = x + 54;
+					damageArea[3] = y + 36;
 					graphics2d.drawImage(leftAttack2, x - tileSize, y, null);
 				}
 				else if (skill1EffectiveTime % 12 < 6){
 					selfCenterX = x + gp.tileSize/2;
 					selfCenterY = y + gp.tileSize*3/2;
 					
-					damageAreaX1 = x + 24;
-					damageAreaY1 = y + 24;
-					damageAreaX2 = x + 36;
-					damageAreaY2 = y + 48;
+					damageArea[0] = x + 24;
+					damageArea[1] = y + 24;
+					damageArea[2] = x + 36;
+					damageArea[3] = y + 48;
 					graphics2d.drawImage(upAttack2, x, y - tileSize, null);
 				}
 				else if (skill1EffectiveTime % 12 < 9) {
 					selfCenterX = x + gp.tileSize/2;
 					selfCenterY = y + gp.tileSize/2;
 					
-					damageAreaX1 = x + 42;
-					damageAreaY1 = y + 24;
-					damageAreaX2 = x + 72;
-					damageAreaY2 = y + 42;
+					damageArea[0] = x + 42;
+					damageArea[1] = y + 24;
+					damageArea[2] = x + 72;
+					damageArea[3] = y + 42;
 					graphics2d.drawImage(rightAttack2, x, y, null);
 				}
 				else{
 					selfCenterX = x + gp.tileSize/2;
 					selfCenterY = y + gp.tileSize/2;
 					
-					damageAreaX1 = x + 18;
-					damageAreaY1 = y + 48;
-					damageAreaX2 = x + 30;
-					damageAreaY2 = y + 24;
+					damageArea[0] = x + 18;
+					damageArea[1] = y + 48;
+					damageArea[2] = x + 30;
+					damageArea[3] = y + 24;
 					graphics2d.drawImage(downAttack2, x, y, null);
 				}
 			}
@@ -450,4 +454,5 @@ public class Fighter extends Entity{
 		text = Integer.toString(mp);
 		graphics2d.drawString(text, 60, 38);
 	}
+
 }

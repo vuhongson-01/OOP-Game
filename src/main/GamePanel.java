@@ -68,6 +68,7 @@ public class GamePanel extends JPanel implements Runnable{
 //	create player
 		player = new Fighter(this, keyHandler);
 		monster = new Boss1(this);
+//		
 	}
 
 	
@@ -116,6 +117,7 @@ public class GamePanel extends JPanel implements Runnable{
 		if (gameState == playState) {
 			player.update(tileManager.mapdemo);
 			monster.update(tileManager.mapdemo);
+//			
 			sensing(player, monster);
 		}
 			
@@ -123,30 +125,52 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	
 	private void sensing(Fighter p, Boss1 m) {
-		int d = (p.selfCenterX - m.selfCenterX) * (p.selfCenterX - m.selfCenterX) + (p.selfCenterY - m.selfCenterY) * (p.selfCenterY - m.selfCenterY);
-		if (d < tileSize * tileSize){
-			m.attacking = true;
-			
-			if (m.f_attack == 0)
-				m.f_attack = 1;
-			
-			if (p.selfCenterX < m.selfCenterX) m.directionAttack = 180;
-			else m.directionAttack = 0;
+//		int d = (p.selfCenterX - m.selfCenterX) * (p.selfCenterX - m.selfCenterX) + (p.selfCenterY - m.selfCenterY) * (p.selfCenterY - m.selfCenterY);
+//		if (d < tileSize * tileSize){
+//			m.attacking = true;
+//			
+//			if (m.f_attack == 0)
+//				m.f_attack = 1;
+//			
+//			if (p.selfCenterX < m.selfCenterX) m.directionAttack = 180;
+//			else m.directionAttack = 0;
+//
+//			if (f % 120 == 0)
+//				p.hp -= (int)((float)(m.attack * (100 - p.defense) / 100));
+//			f++;
+//		
+//		
+//		else {
+//			if (m.f_attack >= 120) {
+//				m.attacking = false;
+//				m.f_attack = 0;
+//			}
+//				
+//		}
+//		
+		if (intersec(p.selfArea, m.damageArea) || among(p.selfArea, m.damageArea) || among(m.damageArea, p.selfArea)) {
+			if (m.attacking)
+				p.decreHP(m.attack);
+			if (p.attacking)
+				m.decreHP(p.attack);
+		}
+	}
 
-			if (f % 120 == 0)
-				p.hp -= (int)((float)(m.attack * (100 - p.defense) / 100));
-			f++;
+
+	private boolean intersec(int[] Area1, int[] Area2) {
+			if (Area1[0] < Area2[2] && Area2[0] < Area1[0] && Area1[1] > Area2[1] && Area1[1] < Area2[3]) return true;
+			if (Area1[2] < Area2[2] && Area2[0] < Area1[2] && Area1[1] > Area2[1] && Area1[1] < Area2[3]) return true;
+			if (Area1[0] < Area2[2] && Area2[0] < Area1[0] && Area1[3] > Area2[1] && Area1[3] < Area2[3]) return true;
+			if (Area1[2] < Area2[2] && Area2[0] < Area1[2] && Area1[3] > Area2[1] && Area1[3] < Area2[3]) return true;
+			return false;
 		}
+	
+	private boolean among(int[] Area1, int[] Area2) {
+		float centerX = (float)(Area1[0] + Area1[2]) / 2;
+		float centerY = (float)(Area1[1] + Area1[3]) / 2;
 		
-		else {
-			if (m.f_attack >= 120) {
-				m.attacking = false;
-				m.f_attack = 0;
-			}
-				
-		}
-		
-//		if (intersec(p.selfAreaX1, p.selfAreaY1, p.selfAreaX2, p.selfAreaY2))
+		if (centerX < Area2[2] && centerX > Area2[0] && centerY < Area2[3] && centerY > Area2[1]) return true;
+		return false;
 	}
 
 
@@ -170,7 +194,7 @@ public class GamePanel extends JPanel implements Runnable{
 			
 	//		MONSTER
 			monster.draw(graphics2d);
-			
+//			
 	//		UI
 			ui.draw(graphics2d);		
 		}

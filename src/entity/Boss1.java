@@ -27,6 +27,13 @@ public class Boss1 extends Entity{
 	public Boss1(GamePanel gp) {
 		this.gp = gp;
 		
+		selfArea = new int[4];
+		damageArea = new int[4];
+		
+		selfArea[0] = x + 16;
+		selfArea[1] = y + 10;
+		selfArea[2] = x + 64;
+		selfArea[3] = y + 76;
 		name = "B.Son";
 		setDefaultValue();
 		getboss1Image();
@@ -152,6 +159,7 @@ public class Boss1 extends Entity{
 		
 		if (!attacking) {
 			if (direction == 180) {
+				
 				if (f % 60 < 15) {
 					graphics2d.drawImage(left1, x, y, null);
 				}
@@ -166,6 +174,7 @@ public class Boss1 extends Entity{
 				}
 			}
 			else if (direction == 0){
+
 				if (f % 60 < 15) {
 					graphics2d.drawImage(right1, x, y, null);
 				}
@@ -180,6 +189,7 @@ public class Boss1 extends Entity{
 				}
 			}
 			else if (direction == 90) {
+
 				if (f % 60 < 15) {
 					graphics2d.drawImage(up1, x, y, null);
 				}
@@ -210,6 +220,12 @@ public class Boss1 extends Entity{
 		}
 		else {
 			if (directionAttack == 0) {
+				
+				selfArea[0] = x + 16;
+				selfArea[1] = y + 10;
+				selfArea[2] = x + gp.tileSize*2;
+				selfArea[3] = y + 76;
+				
 				if (f_attack % 120 < 20) {
 					graphics2d.drawImage(attack_right1, x, y, null);
 				}
@@ -220,6 +236,10 @@ public class Boss1 extends Entity{
 					graphics2d.drawImage(attack_right3, x, y, null);
 				}
 				else if (f_attack % 120 < 80){
+					damageArea[0] = gp.tileSize * 2 - 10;
+					damageArea[1] = gp.tileSize - 10;
+					damageArea[2] = gp.tileSize * 2 + 30;
+					damageArea[3] = gp.tileSize + 30;
 					graphics2d.drawImage(attack_right4, x, y, null);
 				}
 				else {
@@ -227,6 +247,12 @@ public class Boss1 extends Entity{
 				}		
 			}
 			if (directionAttack == 180) {
+				
+				selfArea[0] = x + gp.tileSize * 2;
+				selfArea[1] = y + 10;
+				selfArea[2] = x + gp.tileSize * 4;
+				selfArea[3] = y + 76;
+				
 				if (f_attack % 120 < 20) {
 					graphics2d.drawImage(attack_left1, x - gp.tileSize * 2, y, null);
 				}
@@ -237,6 +263,10 @@ public class Boss1 extends Entity{
 					graphics2d.drawImage(attack_left3, x - gp.tileSize * 2, y, null);
 				}
 				else if (f_attack % 120 < 80){
+					damageArea[0] = gp.tileSize * 2 - 10;
+					damageArea[1] = gp.tileSize - 10;
+					damageArea[2] = gp.tileSize * 2 + 30;
+					damageArea[3] = gp.tileSize + 30;
 					graphics2d.drawImage(attack_left4, x - gp.tileSize * 2, y, null);
 				}
 				else {
@@ -244,7 +274,6 @@ public class Boss1 extends Entity{
 				}	
 			}
 		}
-		
 	}
 
 	private void drawHealthBar(Graphics2D graphics2d) {
