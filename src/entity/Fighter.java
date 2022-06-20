@@ -9,11 +9,12 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import main.GameInterface;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
 
-public class Fighter extends Entity{
+public class Fighter extends Entity implements GameInterface{
 
 	KeyHandler keyHandler;
 	int tileSize; 
@@ -38,26 +39,25 @@ public class Fighter extends Entity{
 		this.gp = gp;
 		this.keyHandler = keyHandler;
 		tileSize = gp.tileSize;
-
+		System.out.println("add key");
 		setDefaultValue();
 		getPlayerImage();
 	}
 	
-	
 	public void setDefaultValue() {
 //		location for draw image
-		x = 100;
-		y = 100;
-		
-//		location of self in screen
-		selfCenterX = x + gp.tileSize/2;
-		selfCenterY = y + gp.tileSize/2;
-		
+		x = gp.tileSize*4;
+		y = gp.tileSize*4;
+
 		selfArea = new int [4];
 		damageArea = new int [4];
 		
+		selfArea[0] = gp.worldx + x + gp.tileSize/6;
+		selfArea[1] = gp.worldy + y + gp.tileSize/6;
+		selfArea[2] = gp.worldx + x+ gp.tileSize/6*5;
+		selfArea[3] = gp.worldy + y + gp.tileSize/6*5;
+				
 		hp = defaultHP;
-//		hp = 250;
 		mp = defaultMP;
 		attack = 15;
 		defense = 10;
@@ -118,38 +118,79 @@ public class Fighter extends Entity{
 				spriteCounter++;
 				preAction = action;
 //				*notice: 4 vertexes
-				if (map[(y + tileSize/3 - speed) / tileSize][x / tileSize] == 1 
-					&& map[(y + tileSize/3 - speed) / tileSize][(x + tileSize) / tileSize] == 1)
-					y -= speed;
+				if (map[(gp.worldy + y + tileSize/3 - speed) / tileSize][(x + gp.worldx)/ tileSize] == 1 
+					&& map[(gp.worldy + y + tileSize/3 - speed) / tileSize][(gp.worldx + x + tileSize) / tileSize] == 1) {
+					if (gp.worldy > 0 && y == TILE_SIZE * 4) gp.worldy -= speed;
+					else {
+						if (gp.worldy == 0) y -= speed;
+						else {
+							if (y > TILE_SIZE*4) y -= speed;
+						}
+					}
+				}	
 			}
 			if (keyHandler.downPressed == true) {
 				action = "down";
 				preAction = action;
 				spriteCounter++;
 //				*notice: 4 vertexes
-				if (map[(y + speed + tileSize) / tileSize][x / tileSize] == 1 
-					&& map[(y + speed + tileSize) / tileSize][(x + tileSize) / tileSize] == 1)
-					y += speed;
+				if (map[(gp.worldy + y + speed + tileSize) / tileSize][(gp.worldx + x) / tileSize] == 1 
+					&& map[(gp.worldy + y + speed + tileSize) / tileSize][(gp.worldx + x + tileSize) / tileSize] == 1) {
+					
+					if (y == SCREEN_HEIGHT - TILE_SIZE*4 && gp.worldy < TILE_SIZE*48 - SCREEN_HEIGHT) gp.worldy += speed;
+					else {
+						if (gp.worldy == TILE_SIZE*48 - SCREEN_HEIGHT) y += speed;
+						else {
+							if (y < SCREEN_HEIGHT - TILE_SIZE*4) {
+								y += speed;
+							}						
+						}
+					}
+				}
+					
 			}
 			if (keyHandler.leftPressed == true) {
 				action = "left";
 				preAction = action;
 				spriteCounter++;
 //				*notice: 4 vertexes
-				if (map[(y + tileSize/3) / tileSize][(x - speed) / tileSize] == 1 
-					&& map[(y + tileSize)/tileSize][(x - speed) / tileSize] == 1)
-					x -= speed;
+				if (map[(gp.worldy + y + tileSize/3) / tileSize][(gp.worldx + x - speed) / tileSize] == 1 
+					&& map[(gp.worldy + y + tileSize)/tileSize][(gp.worldx + x - speed) / tileSize] == 1) {
+					
+					if(x == TILE_SIZE*4 && gp.worldx > 0) gp.worldx -= speed; 
+					else {
+						if (gp.worldx == 0) x -= speed;
+						else {
+							if (x > TILE_SIZE*4) x -= speed; 
+						}
+					}
+				}
+					
 			}
 			if (keyHandler.rightPressed == true) {
 				action = "right";
 				preAction = action;
 				spriteCounter++;
 //				*notice: 4 vertexes
-				if (map[(y + tileSize/3) / tileSize][(x + speed + tileSize) / tileSize] == 1 
-					&& map[(y + tileSize) / tileSize][(x + speed + tileSize) / tileSize] == 1)
-					x += speed;
+				if (map[(gp.worldy + y + tileSize/3) / tileSize][(gp.worldx + x + speed + tileSize) / tileSize] == 1 
+					&& map[(gp.worldy + y + tileSize) / tileSize][(gp.worldx + y + speed + tileSize) / tileSize] == 1) {
+					
+					if (gp.worldx < TILE_SIZE*48 - SCREEN_WIDTH  && x == SCREEN_WIDTH - 4*TILE_SIZE) gp.worldx += speed;
+					else {
+						if (gp.worldx == TILE_SIZE*48 - SCREEN_WIDTH) x += speed;
+						else {
+							if (x < SCREEN_WIDTH - 4*TILE_SIZE) x += speed;
+						}
+					}
+				}
+				
 			}
 
+			selfArea[0] = gp.worldx + x + gp.tileSize/6;
+			selfArea[1] = gp.worldy + y + gp.tileSize/6;
+			selfArea[2] = gp.worldx + x+ gp.tileSize/6*5;
+			selfArea[3] = gp.worldy + y + gp.tileSize/6*5;
+			
 			if (spriteCounter > 15) {   //15 or any number if liking
 				if (spriteNum == 1) {
 					spriteNum = 2;
@@ -194,10 +235,10 @@ public class Fighter extends Entity{
 			if (attacking == true) {
 				if (spriteNum == 1) { image = upAttack1;}
 				if (spriteNum == 2) { 
-					damageArea[0] = x + 24;
-					damageArea[1] = y + 24;
-					damageArea[2] = x + 36;
-					damageArea[3] = y + 48;
+					selfArea[0] = gp.worldx + x + 24;
+					selfArea[1] = gp.worldy + y + 24;
+					selfArea[2] = gp.worldx + x+ 24;
+					selfArea[3] = gp.worldy + y + 24;
 					image = upAttack2;
 				}
 			}
@@ -211,10 +252,10 @@ public class Fighter extends Entity{
 			if (attacking == true) {
 				if (spriteNum == 1) { image = downAttack1;}
 				if (spriteNum == 2) { 
-					damageArea[0] = x + 18;
-					damageArea[1] = y + 48;
-					damageArea[2] = x + 30;
-					damageArea[3] = y + 24;
+					damageArea[0] = gp.worldx + x + 18;
+					damageArea[1] = gp.worldy + y + 48;
+					damageArea[2] = gp.worldx + x + 30;
+					damageArea[3] = gp.worldy + y + 24;
 					image = downAttack2;
 				}
 			}
@@ -228,10 +269,10 @@ public class Fighter extends Entity{
 			if (attacking == true) {
 				if (spriteNum == 1) { image = leftAttack1;}
 				if (spriteNum == 2) { 
-					damageArea[0] = x + 24;
-					damageArea[1] = y + 24;
-					damageArea[2] = x + 54;
-					damageArea[3] = y + 36;
+					damageArea[0] = gp.worldx + x + 24;
+					damageArea[1] = gp.worldy + y + 24;
+					damageArea[2] = gp.worldx + x + 54;
+					damageArea[3] = gp.worldy + y + 36;
 					image = leftAttack2;
 				}
 			}
@@ -245,10 +286,10 @@ public class Fighter extends Entity{
 			if (attacking == true) {
 				if (spriteNum == 1) { image = rightAttack1;}
 				if (spriteNum == 2) { 
-					damageArea[0] = x + 42;
-					damageArea[1] = y + 24;
-					damageArea[2] = x + 72;
-					damageArea[3] = y + 42;
+					damageArea[0] = gp.worldy + y + 42;
+					damageArea[1] = gp.worldy + y + 24;
+					damageArea[2] = gp.worldy + y + 72;
+					damageArea[3] = gp.worldy + y + 42;
 					image = rightAttack2;
 				}
 			}
@@ -260,20 +301,26 @@ public class Fighter extends Entity{
 		
 		if (skill1EffectiveTime == 3*60 || (skill1EffectiveTime < 0 && skill1waiting != 0)) {
 			if (image == leftAttack1 || image == leftAttack2) {
-				selfCenterX = x + gp.tileSize*3/2;
-				selfCenterY = y + gp.tileSize/2;
+
+				selfArea[0] = gp.worldx + x + gp.tileSize + 10;
+				selfArea[1] = gp.worldy + y + 10;
+				selfArea[2] = gp.worldx + x + gp.tileSize + 40;
+				selfArea[3] = gp.worldy + y + 40;
 				graphics2d.drawImage(image, x - tileSize, y, null);
 				}
 			else if (image == upAttack1 || image == upAttack2){
-				selfCenterX = x + gp.tileSize/2;
-				selfCenterY = y + gp.tileSize*3/2;
+				selfArea[0] = gp.worldx + x + 10;
+				selfArea[1] = worldY + gp.tileSize + 10;
+				selfArea[2] = gp.worldx + x + 40;
+				selfArea[3] = worldY + gp.tileSize + 40;
 				graphics2d.drawImage(image, x, y - tileSize, null);
 			}
 			else {
-				selfCenterX = x + gp.tileSize/2;
-				selfCenterY = y + gp.tileSize/2;
+				selfArea[0] = gp.worldx + x + 10;
+				selfArea[1] = gp.worldy + y + 10;
+				selfArea[2] = gp.worldx + x + 40;
+				selfArea[3] = gp.worldy + y + 40;
 				graphics2d.drawImage(image, x, y, null);
-	//			graphics2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 			}			
 		}
 	}
@@ -304,43 +351,45 @@ public class Fighter extends Entity{
 			
 			if (skill1EffectiveTime >= 0) {
 				if (skill1EffectiveTime % 12 < 3) {
-					selfCenterX = x + gp.tileSize*3/2;
-					selfCenterY = y + gp.tileSize/2;
+//					selfCenterX = x + gp.tileSize*3/2;
+//					selfCenterY = y + gp.tileSize/2;
+//					
+					damageArea[0] = gp.worldx + x  24;
+					damageArea[1] = gp.worldy + y + 24;
+					damageArea[2] = gp.worldx + x  54;
+					damageArea[3] = gp.worldy + y + 36;
 					
-					damageArea[0] = x + 24;
-					damageArea[1] = y + 24;
-					damageArea[2] = x + 54;
-					damageArea[3] = y + 36;
+//					if(worldX - ) 
 					graphics2d.drawImage(leftAttack2, x - tileSize, y, null);
 				}
 				else if (skill1EffectiveTime % 12 < 6){
-					selfCenterX = x + gp.tileSize/2;
-					selfCenterY = y + gp.tileSize*3/2;
-					
-					damageArea[0] = x + 24;
-					damageArea[1] = y + 24;
-					damageArea[2] = x + 36;
-					damageArea[3] = y + 48;
+//					selfCenterX = x + gp.tileSize/2;
+//					selfCenterY = y + gp.tileSize*3/2;
+//					
+					damageArea[0] = gp.worldx + x  + 24;
+					damageArea[1] = gp.worldy + y + 24;
+					damageArea[2] = gp.worldx + x  + 36;
+					damageArea[3] = gp.worldy + y + 48;
 					graphics2d.drawImage(upAttack2, x, y - tileSize, null);
 				}
 				else if (skill1EffectiveTime % 12 < 9) {
-					selfCenterX = x + gp.tileSize/2;
-					selfCenterY = y + gp.tileSize/2;
-					
-					damageArea[0] = x + 42;
-					damageArea[1] = y + 24;
-					damageArea[2] = x + 72;
-					damageArea[3] = y + 42;
+//					selfCenterX = x + gp.tileSize/2;
+//					selfCenterY = y + gp.tileSize/2;
+//					
+					damageArea[0] = gp.worldx + x  + 42;
+					damageArea[1] = gp.worldy + y + 24;
+					damageArea[2] = gp.worldx + x  + 72;
+					damageArea[3] = gp.worldy + y + 42;
 					graphics2d.drawImage(rightAttack2, x, y, null);
 				}
 				else{
-					selfCenterX = x + gp.tileSize/2;
-					selfCenterY = y + gp.tileSize/2;
-					
-					damageArea[0] = x + 18;
-					damageArea[1] = y + 48;
-					damageArea[2] = x + 30;
-					damageArea[3] = y + 24;
+//					selfCenterX = x + gp.tileSize/2;
+//					selfCenterY = y + gp.tileSize/2;
+//					
+					damageArea[0] = gp.worldx + x + 18;
+					damageArea[1] = gp.worldy + y + 48;
+					damageArea[2] = gp.worldx + x + 30;
+					damageArea[3] = gp.worldy + y + 24;
 					graphics2d.drawImage(downAttack2, x, y, null);
 				}
 			}

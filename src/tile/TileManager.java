@@ -1,6 +1,7 @@
 package tile;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,33 +17,29 @@ import map.Map;
 public class TileManager {
 
 	GamePanel gp;
-	Tile[] tiles;
 	int level;
-//	save map data to a text file!!!
 	public int[][] mapdemo;
+	BufferedImage [] backgroundMap = new BufferedImage [5];
 	
 	public TileManager(GamePanel gamePanel, int level) {
 		this.gp = gamePanel;
 		this.level = level;
-		tiles = new Tile[10];	
 		
-		getTilesImage();
+		Map map = new Map();
+		mapdemo = map.world0;
 		
-		mapdemo = new int[gp.maxScreenRow][gp.maxScreenCol];
-		
-		Map mapDemo = new Map();
-		getMap(mapDemo);
-	}
-	
-	private void getMap(Map map) {
+		UtilityTool uTool = new UtilityTool();
 		try {
-			if (level == 1) {
-				mapdemo = map.map0;
-				}	
-			}
-		catch (Exception e) {
-			// TODO: handle exception
+			backgroundMap[0] = ImageIO.read(getClass().getResourceAsStream("/background/state1.png"));
+			backgroundMap[0] = uTool.scaleImage(backgroundMap[0], gp.tileSize*48, gp.tileSize*48);
+//			backgroundMap[1] = ImageIO.read(getClass().getResourceAsStream("/background/gametitle.png"));
+//			backgroundMap[2] = ImageIO.read(getClass().getResourceAsStream("/background/gametitle.png"));
+//			backgroundMap[3] = ImageIO.read(getClass().getResourceAsStream("/background/gametitle.png"));
+//			backgroundMap[4] = ImageIO.read(getClass().getResourceAsStream("/background/gametitle.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		
 	}
 
 	public void getTilesImage() {
@@ -52,26 +49,11 @@ public class TileManager {
 	}
 	
 	public void setup(int index, String imagePath, boolean collision) {
-		UtilityTool uTool = new UtilityTool();
 		
-		try {
-			tiles[index] = new Tile();
-			tiles[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imagePath + ".png"));
-			tiles[index].image = uTool.scaleImage(tiles[index].image, gp.tileSize, gp.tileSize);
-			tiles[index].collision = collision;
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public void draw(Graphics2D graphics2d) {
-		for (int row = 0; row < gp.maxScreenRow; row++) {
-			for (int col = 0; col < gp.maxScreenCol; col++) {
-				graphics2d.drawImage(tiles[mapdemo[row][col]].image, col * gp.tileSize, row * gp.tileSize, gp.tileSize, gp.tileSize, null);
-			}
-		}
-		
+		graphics2d.drawImage(backgroundMap[0], 0, 0, gp.tileSize * 30, gp.tileSize * 30, null);
 	}
 
 }

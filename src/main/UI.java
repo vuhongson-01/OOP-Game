@@ -7,6 +7,7 @@ import java.awt.image.PixelGrabber;
 
 public class UI {
 
+	
 	Font arial_40;
 	GamePanel gp;
 	public boolean messageOn = false;
@@ -40,10 +41,10 @@ public class UI {
 		}
 		
 		if (gp.gameState == gp.playState) {
-			
+			//
 		}
 		
-		if (gp.gameState == gp.pauseState) {
+		if (gp.gameState == gp.pauseState && gp.isPause) {
 			drawPauseScreen();
 		}	
 		

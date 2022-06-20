@@ -25,9 +25,9 @@ public class Monster2 extends Entity{
 		y = 100;
 		
 //		location of self in screen
-		selfCenterX = x + gp.tileSize;
-		selfCenterY = y + gp.tileSize;
-		
+//		selfCenterX = x + gp.tileSize;
+//		selfCenterY = y + gp.tileSize;
+//		
 		hp = defaultHP;
 //		hp = 250;
 		mp = defaultMP;
@@ -56,10 +56,10 @@ public class Monster2 extends Entity{
 		
 		x += speed;
 		
-		selfAreaX1 = x + 3;
-		selfAreaY1 = y + 18;
-		selfAreaX2 = x + 45;
-		selfAreaY2 = y + 48;
+//		selfAreaX1 = x + 3;
+//		selfAreaY1 = y + 18;
+//		selfAreaX2 = x + 45;
+//		selfAreaY2 = y + 48;
 	}
 
 	private boolean isBlocked(int[][] map, int x, int y) {
@@ -77,8 +77,8 @@ public class Monster2 extends Entity{
 	
 
 	public void draw(Graphics2D graphics2d) {
-		selfCenterX = x + gp.tileSize;
-		selfCenterY = y + gp.tileSize;
+//		selfCenterX = x + gp.tileSize;
+//		selfCenterY = y + gp.tileSize;
 		if (f % 15 < 10) graphics2d.drawImage(monster1, x, y, null);
 		else {
 			graphics2d.drawImage(monster2, x, y, null);

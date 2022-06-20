@@ -30,10 +30,7 @@ public class Boss1 extends Entity{
 		selfArea = new int[4];
 		damageArea = new int[4];
 		
-		selfArea[0] = x + 16;
-		selfArea[1] = y + 10;
-		selfArea[2] = x + 64;
-		selfArea[3] = y + 76;
+
 		name = "B.Son";
 		setDefaultValue();
 		getboss1Image();
@@ -43,10 +40,13 @@ public class Boss1 extends Entity{
 //		location for draw image
 		x = 450;
 		y = 300;
-		
+		selfArea[0] = x + 16;
+		selfArea[1] = y + 10;
+		selfArea[2] = x + 64;
+		selfArea[3] = y + 76;		
 //		location of self in screen
-		selfCenterX = x + gp.tileSize;
-		selfCenterY = y + gp.tileSize;
+//		selfCenterX = x + gp.tileSize;
+//		selfCenterY = y + gp.tileSize;
 		
 		hp = defaultHP;
 //		hp = 250;
@@ -113,10 +113,10 @@ public class Boss1 extends Entity{
 			else y += speed;
 			
 //			update self area
-			selfAreaX1 = x + 16;
-			selfAreaY1 = y + 10;
-			selfAreaX2 = x + 64;
-			selfAreaY2 = y + 76;			
+			selfArea[0] = x + 16;
+			selfArea[1] = y + 10;
+			selfArea[2] = x + 64;
+			selfArea[3] = y + 76;			
 		}
 		else {
 			f_attack++;
@@ -152,9 +152,6 @@ public class Boss1 extends Entity{
 //	}
 	
 	public void draw(Graphics2D graphics2d) {
-		selfCenterX = x + gp.tileSize;
-		selfCenterY = y + gp.tileSize;
-		
 		drawHealthBar(graphics2d);
 		
 		if (!attacking) {
@@ -248,9 +245,9 @@ public class Boss1 extends Entity{
 			}
 			if (directionAttack == 180) {
 				
-				selfArea[0] = x + gp.tileSize * 2;
+				selfArea[0] = x - gp.tileSize * 2;
 				selfArea[1] = y + 10;
-				selfArea[2] = x + gp.tileSize * 4;
+				selfArea[2] = x + gp.tileSize * 2;
 				selfArea[3] = y + 76;
 				
 				if (f_attack % 120 < 20) {
@@ -263,10 +260,10 @@ public class Boss1 extends Entity{
 					graphics2d.drawImage(attack_left3, x - gp.tileSize * 2, y, null);
 				}
 				else if (f_attack % 120 < 80){
-					damageArea[0] = gp.tileSize * 2 - 10;
-					damageArea[1] = gp.tileSize - 10;
-					damageArea[2] = gp.tileSize * 2 + 30;
-					damageArea[3] = gp.tileSize + 30;
+					damageArea[0] = x - gp.tileSize * 2 + 10;
+					damageArea[1] = y + gp.tileSize - 10;
+					damageArea[2] = x + 30;
+					damageArea[3] = y + gp.tileSize + 30;
 					graphics2d.drawImage(attack_left4, x - gp.tileSize * 2, y, null);
 				}
 				else {

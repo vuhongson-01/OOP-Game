@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.DataTruncation;
 import java.util.Currency;
 
@@ -11,16 +13,13 @@ import java.lang.Math;
 import javax.swing.JPanel;
 
 import entity.Fighter;
+import screen.StateBackground;
 import entity.Boss1;
 import entity.Entity;
 import tile.TileManager;
 
-/**
- * @author vuhongsonchv1619gmail.com
- * This class operate the game play
- */
 
-public class GamePanel extends JPanel implements Runnable{
+public class GamePanel extends JPanel implements Runnable, GameInterface{
 
 //	Set up size of tile, scale, screen,..
 	final int originalTileSize = 16; //16x16
@@ -33,18 +32,21 @@ public class GamePanel extends JPanel implements Runnable{
 	
 //	Create object
 	Thread gameThread;
-	KeyHandler keyHandler = new KeyHandler(this);
-	TileManager tileManager = new TileManager(this, 1);
+	KeyHandler keyHandler;
+//	TileManager tileManager = new TileManager(this, 0);
+	StateBackground stateBackground;
 	Fighter player;
 	Boss1 monster;
 	public UI ui = new UI(this);
 	
-	
 //	player default position
-	int playerX = 100;
-	int playerY = 100;
-	int playerSpeed = 4;
+	int playerX = TILE_SIZE*4;
+	int playerY = TILE_SIZE*4;
+	public int worldx = 0;
+	public int worldy = 0;
 	
+	int playerSpeed = 4;
+	boolean isPause = false;
 	
 //	setup FPS
 	int FPS = 60;
@@ -63,25 +65,25 @@ public class GamePanel extends JPanel implements Runnable{
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		this.setBackground(Color.black);
 		this.setDoubleBuffered(true);
+		keyHandler = new KeyHandler(this);
 		this.addKeyListener(keyHandler);
-		this.setFocusable(true);	
-//	create player
+		this.setFocusable(true);
+		stateBackground = new StateBackground(this, 0);
+		
 		player = new Fighter(this, keyHandler);
 		monster = new Boss1(this);
-//		
 	}
 
 	
 	public void startGameThread() {
 		gameThread = new Thread(this);
-		gameState = titleState;
+		gameState = playState;
 		gameThread.start();
 	}
 	
 	
 	public void run() { 
 // 		Setup FPS = 60
-		
 		double drawInterval = 1e9/FPS;
 		double delta = 0;
 		double lastTime = System.nanoTime();
@@ -115,40 +117,48 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void update() {
 		if (gameState == playState) {
-			player.update(tileManager.mapdemo);
-			monster.update(tileManager.mapdemo);
+			player.update(stateBackground.mapdemo);
+			monster.update(stateBackground.mapdemo);
 //			
 			sensing(player, monster);
-		}
 			
+			if(player.x > screenWidth / 2 && player.y > screenHeight / 2) {
+				monster.worldX = monster.x + screenWidth / 2 - player.x; 	monster.worldY = monster.y + screenHeight / 2 - player.y;
+				monster.worldX = monster.x + screenWidth / 2 - player.x; 			monster.worldY = monster.y + screenHeight / 2 - player.y;
+			}
+			else if (player.x > screenWidth / 2 && player.y <= screenHeight / 2) {
+				monster.worldX = monster.x + screenWidth / 2 - player.x; 	monster.worldY = monster.y;
+				monster.worldX = monster.x + screenWidth / 2 - player.x; 			monster.worldY = monster.y;
+			}
+			else if (player.x <= screenWidth / 2 && player.y > screenHeight / 2) {
+				monster.worldX = monster.x; 	monster.worldY = monster.y + screenHeight / 2 - player.y;
+				monster.worldX = monster.x; 			monster.worldY = monster.y + screenHeight / 2 - player.y;
+			}
+			else {
+				monster.worldX = monster.x; 	monster.worldY = monster.y;
+				monster.worldX = monster.x; 			monster.worldY = monster.y;
+			}
+		}
 	}
 	
 	
 	private void sensing(Fighter p, Boss1 m) {
-//		int d = (p.selfCenterX - m.selfCenterX) * (p.selfCenterX - m.selfCenterX) + (p.selfCenterY - m.selfCenterY) * (p.selfCenterY - m.selfCenterY);
-//		if (d < tileSize * tileSize){
-//			m.attacking = true;
-//			
-//			if (m.f_attack == 0)
-//				m.f_attack = 1;
-//			
-//			if (p.selfCenterX < m.selfCenterX) m.directionAttack = 180;
-//			else m.directionAttack = 0;
-//
-//			if (f % 120 == 0)
-//				p.hp -= (int)((float)(m.attack * (100 - p.defense) / 100));
-//			f++;
-//		
-//		
-//		else {
-//			if (m.f_attack >= 120) {
-//				m.attacking = false;
-//				m.f_attack = 0;
-//			}
-//				
-//		}
-//		
+
+		if (d(p.selfArea, m.selfArea) < tileSize*3/2) {
+			m.attacking = true;
+			if ((p.selfArea[0] + p.selfArea[2])/2.0 < (m.selfArea[0] + m.selfArea[2])/2.0) {
+				m.directionAttack = 180;
+			}
+			else {
+				m.directionAttack = 0;
+			}
+		}
+		else {
+			m.attacking = false;
+		}
+		
 		if (intersec(p.selfArea, m.damageArea) || among(p.selfArea, m.damageArea) || among(m.damageArea, p.selfArea)) {
+			System.out.println(2);
 			if (m.attacking)
 				p.decreHP(m.attack);
 			if (p.attacking)
@@ -158,6 +168,7 @@ public class GamePanel extends JPanel implements Runnable{
 
 
 	private boolean intersec(int[] Area1, int[] Area2) {
+//		System.out.println(Area1[0] + "," + Area1[1] + " " + Area1[2] + "," + Area1[3] + " / " + Area2[0] + "," + Area2[1] + " " + Area2[2] + "," + Area2[3]);
 			if (Area1[0] < Area2[2] && Area2[0] < Area1[0] && Area1[1] > Area2[1] && Area1[1] < Area2[3]) return true;
 			if (Area1[2] < Area2[2] && Area2[0] < Area1[2] && Area1[1] > Area2[1] && Area1[1] < Area2[3]) return true;
 			if (Area1[0] < Area2[2] && Area2[0] < Area1[0] && Area1[3] > Area2[1] && Area1[3] < Area2[3]) return true;
@@ -173,21 +184,29 @@ public class GamePanel extends JPanel implements Runnable{
 		return false;
 	}
 
-
+	public float d(int [] Area1, int[] Area2) {
+		float distance = 0;
+		
+		float centerX1 = (float)(Area1[0] + Area1[2]) / 2;
+		float centerY1 = (float)(Area1[1] + Area1[3]) / 2;
+		
+		float centerX2 = (float)(Area2[0] + Area2[2]) / 2;
+		float centerY2 = (float)(Area2[1] + Area2[3]) / 2;
+		
+		distance = (float) Math.sqrt((centerX1 - centerX2)*(centerX1-centerX2) + (centerY1 - centerY2)*(centerY1-centerY2));
+		
+		return distance;
+	}
+	
 //	draw object in screen
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
 		Graphics2D graphics2d = (Graphics2D) g;
-
-//		TITLE STATE
-		if (gameState == titleState) {
-			ui.draw(graphics2d);
-		}
 		
 		if (gameState == playState) {
 	//		TILE		
-			tileManager.draw(graphics2d);
+			stateBackground.draw(graphics2d, -worldx, -worldy);
 			
 	//		PLAYER
 			player.draw(graphics2d);
@@ -198,12 +217,17 @@ public class GamePanel extends JPanel implements Runnable{
 	//		UI
 			ui.draw(graphics2d);		
 		}
-		
-		if (gameState == guideState) {
-			ui.draw(graphics2d);
-		}
 		graphics2d.dispose();
 	}
+
+//
+//@Override
+//public void actionPerformed(ActionEvent e) {
+//	// TODO Auto-generated method stub
+//	this.requestFocusInWindow();
+//	
+//}
+	
 	
 
 }

@@ -67,38 +67,44 @@ public class KeyHandler implements KeyListener{
 		}
 		
 //		GAME STATE
-		if (code == KeyEvent.VK_W) {
-			upPressed = true;
-		}
-		if (code == KeyEvent.VK_S) {
-			downPressed = true;
-		}
-		if (code == KeyEvent.VK_A) {
-			leftPressed = true;
-		}
-		if (code == KeyEvent.VK_D) {
-			rightPressed = true;
-		}
-		if (code == KeyEvent.VK_P) {
-			if (gp.gameState == gp.playState) {
-				gp.gameState = gp.pauseState;
+		if (gp.gameState == gp.playState) {
+			if (code == KeyEvent.VK_P) {
+				gp.isPause = !gp.isPause;
 			}
-			else if (gp.gameState == gp.pauseState) {
-				gp.gameState = gp.playState;
+			if (!gp.isPause) {
+				if (code == KeyEvent.VK_W) {
+					System.out.println("D");
+					upPressed = true;
+				}
+				if (code == KeyEvent.VK_S) {
+					System.out.println("S");
+					downPressed = true;
+				}
+				if (code == KeyEvent.VK_A) {
+					System.out.println("A");
+					leftPressed = true;
+				}
+				if (code == KeyEvent.VK_D) {
+					System.out.println("D");
+					rightPressed = true;
+				}
+
+				if (code == KeyEvent.VK_F) {
+					attack = true;
+				}
+				if (code == KeyEvent.VK_1) {
+					Askill1IsActive = true;
+				}
+				if (code == KeyEvent.VK_2) {
+					Askill2IsActive = true;
+				}
+				if (code == KeyEvent.VK_3) {
+					Askill3IsActive = true;
+				}	
 			}
+			
 		}
-		if (code == KeyEvent.VK_F) {
-			attack = true;
-		}
-		if (code == KeyEvent.VK_1) {
-			Askill1IsActive = true;
-		}
-		if (code == KeyEvent.VK_2) {
-			Askill2IsActive = true;
-		}
-		if (code == KeyEvent.VK_3) {
-			Askill3IsActive = true;
-		}
+		
 	}
 
 	@Override
