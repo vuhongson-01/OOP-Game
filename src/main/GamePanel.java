@@ -10,6 +10,8 @@ import java.sql.DataTruncation;
 import java.util.Currency;
 
 import java.lang.Math;
+
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import entity.Fighter;
@@ -25,10 +27,10 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	final int originalTileSize = 16; //16x16
 	final int scale = 3;
 	public final int tileSize = originalTileSize * scale; //48x48
-	public final int maxScreenCol = 16;
-	public final int maxScreenRow = 12;
-	public final int screenWidth = tileSize * maxScreenCol;	//768px
-	public final int screenHeight = tileSize * maxScreenRow;	//576px
+//	public final int maxScreenCol = 16;
+//	public final int maxScreenRow = 12;
+//	public final int SCREEN_WIDTH = tileSize * maxScreenCol;	//768px
+//	public final int SCREEN_HEIGHT = tileSize * maxScreenRow;	//576px
 	
 //	Create object
 	Thread gameThread;
@@ -54,15 +56,12 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	
 //	GAME STATE
 	public int gameState;
-	public final int titleState = 0;
 	public final int playState = 1;
 	public final int pauseState = 2;
-	public final int guideState = 3;
-	
 	
 	public GamePanel() {
 //	setup game panel
-		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+		this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 		this.setBackground(Color.black);
 		this.setDoubleBuffered(true);
 		keyHandler = new KeyHandler(this);
@@ -119,32 +118,15 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 		if (gameState == playState) {
 			player.update(stateBackground.mapdemo);
 			monster.update(stateBackground.mapdemo);
-//			
+
 			sensing(player, monster);
-			
-			if(player.x > screenWidth / 2 && player.y > screenHeight / 2) {
-				monster.worldX = monster.x + screenWidth / 2 - player.x; 	monster.worldY = monster.y + screenHeight / 2 - player.y;
-				monster.worldX = monster.x + screenWidth / 2 - player.x; 			monster.worldY = monster.y + screenHeight / 2 - player.y;
-			}
-			else if (player.x > screenWidth / 2 && player.y <= screenHeight / 2) {
-				monster.worldX = monster.x + screenWidth / 2 - player.x; 	monster.worldY = monster.y;
-				monster.worldX = monster.x + screenWidth / 2 - player.x; 			monster.worldY = monster.y;
-			}
-			else if (player.x <= screenWidth / 2 && player.y > screenHeight / 2) {
-				monster.worldX = monster.x; 	monster.worldY = monster.y + screenHeight / 2 - player.y;
-				monster.worldX = monster.x; 			monster.worldY = monster.y + screenHeight / 2 - player.y;
-			}
-			else {
-				monster.worldX = monster.x; 	monster.worldY = monster.y;
-				monster.worldX = monster.x; 			monster.worldY = monster.y;
-			}
 		}
 	}
 	
 	
 	private void sensing(Fighter p, Boss1 m) {
 
-		if (d(p.selfArea, m.selfArea) < tileSize*3/2) {
+		if (d(p.selfArea, m.selfArea) < TILE_SIZE*3/2) {
 			m.attacking = true;
 			if ((p.selfArea[0] + p.selfArea[2])/2.0 < (m.selfArea[0] + m.selfArea[2])/2.0) {
 				m.directionAttack = 180;
@@ -156,6 +138,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 		else {
 			m.attacking = false;
 		}
+		
 		
 		if (intersec(p.selfArea, m.damageArea) || among(p.selfArea, m.damageArea) || among(m.damageArea, p.selfArea)) {
 			System.out.println(2);
@@ -217,17 +200,22 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	//		UI
 			ui.draw(graphics2d);		
 		}
+//		if (gameState == pauseState) {
+//			String text = "PAUSE";
+//			
+//			int x, y;
+//			
+//			x = getXForCenterMetrics(graphics2d, text);
+//			y = SCREEN_HEIGHT/2;
+//			
+//			g.drawString(text, x, y);
+//		}
+
 		graphics2d.dispose();
 	}
-
-//
-//@Override
-//public void actionPerformed(ActionEvent e) {
-//	// TODO Auto-generated method stub
-//	this.requestFocusInWindow();
-//	
-//}
-	
-	
-
+//	public int getXForCenterMetrics(Graphics2D graphics2d, String text) {
+//		int length = (int)graphics2d.getFontMetrics().getStringBounds(text, graphics2d).getWidth();
+//		int x = SCREEN_WIDTH/2 - length/2;
+//		return x;
+//	}
 }

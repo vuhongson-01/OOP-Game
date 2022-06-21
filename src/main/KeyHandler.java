@@ -35,43 +35,16 @@ public class KeyHandler implements KeyListener{
 		
 		int code = e.getKeyCode();
 		
-//		TITLE SCREEN
-		if (gp.gameState == gp.titleState) {
-			if (code == KeyEvent.VK_W) {
-				gp.ui.commandNum--;
-				if (gp.ui.commandNum < 0) gp.ui.commandNum = 2;
-			}
-			if (code == KeyEvent.VK_S) {
-				gp.ui.commandNum++;
-				if (gp.ui.commandNum > 2) gp.ui.commandNum = 0;
-			}	
-			
-			if (code == KeyEvent.VK_ENTER) {
-				if (gp.ui.commandNum == 0) {
-					gp.gameState = gp.playState;
-				}
-				else if (gp.ui.commandNum == 1) {
-					gp.gameState = gp.guideState;
-				}
-				else if (gp.ui.commandNum == 2) {
-					System.exit(0);
-				}
-			}
-		}
-		
-//		GUIDE SCREEN
-		if (gp.gameState == gp.guideState) {
-			if (code == KeyEvent.VK_B) {
-				gp.gameState = gp.titleState;
-			}
-		}
-		
 //		GAME STATE
 		if (gp.gameState == gp.playState) {
 			if (code == KeyEvent.VK_P) {
-				gp.isPause = !gp.isPause;
+				if (gp.gameState != gp.pauseState)
+					gp.gameState = gp.pauseState;
+				else {
+					gp.gameState = gp.playState;
+				}
 			}
-			if (!gp.isPause) {
+			if (gp.gameState == gp.playState) {
 				if (code == KeyEvent.VK_W) {
 					System.out.println("D");
 					upPressed = true;

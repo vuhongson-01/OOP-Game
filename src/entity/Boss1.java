@@ -44,9 +44,6 @@ public class Boss1 extends Entity{
 		selfArea[1] = y + 10;
 		selfArea[2] = x + 64;
 		selfArea[3] = y + 76;		
-//		location of self in screen
-//		selfCenterX = x + gp.tileSize;
-//		selfCenterY = y + gp.tileSize;
 		
 		hp = defaultHP;
 //		hp = 250;
@@ -158,60 +155,60 @@ public class Boss1 extends Entity{
 			if (direction == 180) {
 				
 				if (f % 60 < 15) {
-					graphics2d.drawImage(left1, x, y, null);
+					graphics2d.drawImage(left1, x-gp.worldx, y-gp.worldy, null);
 				}
 				else if (f % 60 < 30){
-					graphics2d.drawImage(left2, x, y, null);
+					graphics2d.drawImage(left2, x-gp.worldx, y-gp.worldy, null);
 				}	
 				else if (f % 60 < 45){
-					graphics2d.drawImage(left3, x, y, null);
+					graphics2d.drawImage(left3, x-gp.worldx, y-gp.worldy, null);
 				}
 				else {
-					graphics2d.drawImage(left4, x, y, null);
+					graphics2d.drawImage(left4, x-gp.worldx, y-gp.worldy, null);
 				}
 			}
 			else if (direction == 0){
 
 				if (f % 60 < 15) {
-					graphics2d.drawImage(right1, x, y, null);
+					graphics2d.drawImage(right1, x-gp.worldx, y-gp.worldy, null);
 				}
 				else if (f % 60 < 23){
-					graphics2d.drawImage(right2, x, y, null);
+					graphics2d.drawImage(right2, x-gp.worldx, y-gp.worldy, null);
 				}	
 				else if (f % 60 < 45){
-					graphics2d.drawImage(right3, x, y, null);
+					graphics2d.drawImage(right3, x-gp.worldx, y-gp.worldy, null);
 				}
 				else {
-					graphics2d.drawImage(right4, x, y, null);
+					graphics2d.drawImage(right4, x-gp.worldx, y-gp.worldy, null);
 				}
 			}
 			else if (direction == 90) {
 
 				if (f % 60 < 15) {
-					graphics2d.drawImage(up1, x, y, null);
+					graphics2d.drawImage(up1, x-gp.worldx, y-gp.worldy, null);
 				}
 				else if (f % 60 < 23){
-					graphics2d.drawImage(up2, x, y, null);
+					graphics2d.drawImage(up2, x-gp.worldx, y-gp.worldy, null);
 				}	
 				else if (f % 60 < 45){
-					graphics2d.drawImage(up3, x, y, null);
+					graphics2d.drawImage(up3, x-gp.worldx, y-gp.worldy, null);
 				}
 				else {
-					graphics2d.drawImage(up4, x, y, null);
+					graphics2d.drawImage(up4, x-gp.worldx, y-gp.worldy, null);
 				}
 			}
 			else if (direction == 270) {
 				if (f % 60 < 15) {
-					graphics2d.drawImage(down1, x, y, null);
+					graphics2d.drawImage(down1, x-gp.worldx, y-gp.worldy, null);
 				}
 				else if (f % 60 < 23){
-					graphics2d.drawImage(down2, x, y, null);
+					graphics2d.drawImage(down2, x-gp.worldx, y-gp.worldy, null);
 				}	
 				else if (f % 60 < 45){
-					graphics2d.drawImage(down3, x, y, null);
+					graphics2d.drawImage(down3, x-gp.worldx, y-gp.worldy, null);
 				}
 				else {
-					graphics2d.drawImage(down4, x, y, null);
+					graphics2d.drawImage(down4, x-gp.worldx, y-gp.worldy, null);
 				}
 			}			
 		}
@@ -224,23 +221,23 @@ public class Boss1 extends Entity{
 				selfArea[3] = y + 76;
 				
 				if (f_attack % 120 < 20) {
-					graphics2d.drawImage(attack_right1, x, y, null);
+					graphics2d.drawImage(attack_right1, x-gp.worldx, y-gp.worldy, null);
 				}
 				else if (f_attack % 120 < 40){
-					graphics2d.drawImage(attack_right2, x, y, null);
+					graphics2d.drawImage(attack_right2, x-gp.worldx, y-gp.worldy, null);
 				}	
 				else if (f_attack % 120 < 60){
-					graphics2d.drawImage(attack_right3, x, y, null);
+					graphics2d.drawImage(attack_right3, x-gp.worldx, y-gp.worldy, null);
 				}
 				else if (f_attack % 120 < 80){
 					damageArea[0] = gp.tileSize * 2 - 10;
 					damageArea[1] = gp.tileSize - 10;
 					damageArea[2] = gp.tileSize * 2 + 30;
 					damageArea[3] = gp.tileSize + 30;
-					graphics2d.drawImage(attack_right4, x, y, null);
+					graphics2d.drawImage(attack_right4, x-gp.worldx, y-gp.worldy, null);
 				}
 				else {
-					graphics2d.drawImage(attack_right5, x, y, null);
+					graphics2d.drawImage(attack_right5, x-gp.worldx, y-gp.worldy, null);
 				}		
 			}
 			if (directionAttack == 180) {
@@ -251,23 +248,23 @@ public class Boss1 extends Entity{
 				selfArea[3] = y + 76;
 				
 				if (f_attack % 120 < 20) {
-					graphics2d.drawImage(attack_left1, x - gp.tileSize * 2, y, null);
+					graphics2d.drawImage(attack_left1, x - gp.tileSize * 2-gp.worldx, y-gp.worldy, null);
 				}
 				else if (f_attack % 120 < 40){
-					graphics2d.drawImage(attack_left2, x - gp.tileSize * 2, y, null);
+					graphics2d.drawImage(attack_left2, x - gp.tileSize * 2-gp.worldx, y-gp.worldy, null);
 				}	
 				else if (f_attack % 120 < 60){
-					graphics2d.drawImage(attack_left3, x - gp.tileSize * 2, y, null);
+					graphics2d.drawImage(attack_left3, x - gp.tileSize * 2-gp.worldx, y-gp.worldy, null);
 				}
 				else if (f_attack % 120 < 80){
 					damageArea[0] = x - gp.tileSize * 2 + 10;
 					damageArea[1] = y + gp.tileSize - 10;
 					damageArea[2] = x + 30;
 					damageArea[3] = y + gp.tileSize + 30;
-					graphics2d.drawImage(attack_left4, x - gp.tileSize * 2, y, null);
+					graphics2d.drawImage(attack_left4, x - gp.tileSize * 2-gp.worldx, y-gp.worldy, null);
 				}
 				else {
-					graphics2d.drawImage(attack_left5, x - gp.tileSize * 2, y, null);
+					graphics2d.drawImage(attack_left5, x - gp.tileSize * 2-gp.worldx, y-gp.worldy, null);
 				}	
 			}
 		}
@@ -277,11 +274,11 @@ public class Boss1 extends Entity{
 		graphics2d.setFont(graphics2d.getFont().deriveFont(Font.PLAIN, 12F));
 		graphics2d.setColor(Color.white);
 		
-		graphics2d.drawString(name, x, y-10);
+		graphics2d.drawString(name, x-gp.worldx, y-10-gp.worldy);
 		
-		graphics2d.fillRoundRect(x-2, y-5, gp.tileSize * 2 + 4, 10, 4, 4);
+		graphics2d.fillRoundRect(x-2-gp.worldx, y-5-gp.worldy, gp.tileSize * 2 + 4, 10, 4, 4);
 		graphics2d.setColor(Color.red);
-		graphics2d.fillRoundRect(x, y-4, (int)(hp/defaultHP * gp.tileSize * 2), 8, 4, 4);
+		graphics2d.fillRoundRect(x-gp.worldx, y-4-gp.worldy, (int)(hp/defaultHP * gp.tileSize * 2), 8, 4, 4);
 		
 	}
 }

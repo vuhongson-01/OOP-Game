@@ -38,7 +38,6 @@ public class LevelOptionScreen extends JPanel implements GameInterface{
     
     public LevelOptionScreen(DemoMain main) {
     	setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-		setBackground(MAIN_COLOR);
 		setDoubleBuffered(true);
 		setFocusable(true);
 		setLayout(null);

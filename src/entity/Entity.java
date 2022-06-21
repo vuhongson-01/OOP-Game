@@ -12,7 +12,7 @@ import main.UtilityTool;
 public class Entity {
 
 	public int x,y;
-	public int worldX, worldY;
+//	public int worldX, worldY;
 	
 	public int screenX, screenY;
 	public int speed;
@@ -26,18 +26,11 @@ public class Entity {
 	public int hp, mp, attack, defense, attackRange;
 	public int attackSpeed;
 	
-	
 //	~ f
 	public int spriteCounter = 0;
 	public int spriteNum = 1;
 	
-	
-	
 //	area that can give damage, example: boundary of sword; -----------
-	public int damageAreaX1 = -1;						   
-	public int damageAreaY1 = -1;						   
-	public int damageAreaX2 = -1;
-	public int damageAreaY2 = -1;
 	
 	public int selfArea[];          // instead of 4 variables ^
 	public int damageArea[];		// instead of 4 variables ^

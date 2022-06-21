@@ -1,6 +1,6 @@
 package entity;
 
-import java.awt.AlphaComposite;
+//import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -310,9 +310,9 @@ public class Fighter extends Entity implements GameInterface{
 				}
 			else if (image == upAttack1 || image == upAttack2){
 				selfArea[0] = gp.worldx + x + 10;
-				selfArea[1] = worldY + gp.tileSize + 10;
+				selfArea[1] = gp.worldy + gp.tileSize + 10;
 				selfArea[2] = gp.worldx + x + 40;
-				selfArea[3] = worldY + gp.tileSize + 40;
+				selfArea[3] = gp.worldy + gp.tileSize + 40;
 				graphics2d.drawImage(image, x, y - tileSize, null);
 			}
 			else {
@@ -329,11 +329,11 @@ public class Fighter extends Entity implements GameInterface{
 	private void drawSkill(Graphics2D graphics2d) {
 		
 		graphics2d.setColor(Color.black);
-		graphics2d.drawImage(skillbar, 0, gp.screenHeight - gp.tileSize, null);
+		graphics2d.drawImage(skillbar, 0, SCREEN_HEIGHT-TILE_SIZE, null);
 		
-		graphics2d.drawImage(skill1, 0, gp.screenHeight - gp.tileSize, null);
+		graphics2d.drawImage(skill1, 0, SCREEN_HEIGHT-TILE_SIZE, null);
 		if (mp < skill1MP || skill1waiting != 0) {
-			graphics2d.drawImage(impossible, 0, gp.screenHeight - gp.tileSize, null);
+			graphics2d.drawImage(impossible, 0, SCREEN_HEIGHT-TILE_SIZE, null);
 		}
 		
 		
@@ -354,9 +354,9 @@ public class Fighter extends Entity implements GameInterface{
 //					selfCenterX = x + gp.tileSize*3/2;
 //					selfCenterY = y + gp.tileSize/2;
 //					
-					damageArea[0] = gp.worldx + x  24;
+					damageArea[0] = gp.worldx + x + 24;
 					damageArea[1] = gp.worldy + y + 24;
-					damageArea[2] = gp.worldx + x  54;
+					damageArea[2] = gp.worldx + x + 54;
 					damageArea[3] = gp.worldy + y + 36;
 					
 //					if(worldX - ) 
@@ -397,16 +397,16 @@ public class Fighter extends Entity implements GameInterface{
 			graphics2d.setColor(Color.white);
 			
 			int length = (int)graphics2d.getFontMetrics().getStringBounds(Integer.toString(skill1waiting/60), graphics2d).getWidth();
-			graphics2d.drawString(Integer.toString(skill1waiting/60), gp.tileSize/2 - length/2, gp.screenHeight - gp.tileSize/2);
+			graphics2d.drawString(Integer.toString(skill1waiting/60), gp.tileSize/2 - length/2, SCREEN_HEIGHT-TILE_SIZE/2);
 		}
 		
 		if (skill1waiting == 0) {
 			skill1EffectiveTime = 3*60;
 		}
 		
-		graphics2d.drawImage(skill2, gp.tileSize, gp.screenHeight - gp.tileSize, null);
+		graphics2d.drawImage(skill2, gp.tileSize, SCREEN_HEIGHT-TILE_SIZE, null);
 		if (mp < skill2MP || skill2waiting != 0) {
-			graphics2d.drawImage(impossible, gp.tileSize, gp.screenHeight - gp.tileSize, null);
+			graphics2d.drawImage(impossible, gp.tileSize, SCREEN_HEIGHT-TILE_SIZE, null);
 		}
 		
 		
@@ -427,7 +427,7 @@ public class Fighter extends Entity implements GameInterface{
 			graphics2d.setColor(Color.white);
 			
 			int length = (int)graphics2d.getFontMetrics().getStringBounds(Integer.toString(skill2waiting/60), graphics2d).getWidth();
-			graphics2d.drawString(Integer.toString(skill2waiting/60), gp.tileSize + gp.tileSize/2 - length/2, gp.screenHeight - gp.tileSize/2);
+			graphics2d.drawString(Integer.toString(skill2waiting/60), gp.tileSize + gp.tileSize/2 - length/2, SCREEN_HEIGHT-TILE_SIZE/2);
 		}
 		
 		if (skill2waiting == 0 || skill2EffectiveTime < 0) {
@@ -440,9 +440,9 @@ public class Fighter extends Entity implements GameInterface{
 		
 		
 //		skill3		
-		graphics2d.drawImage(skill3, gp.tileSize*2, gp.screenHeight - gp.tileSize, null);
+		graphics2d.drawImage(skill3, gp.tileSize*2, SCREEN_HEIGHT-TILE_SIZE, null);
 		if (mp < skill3MP || skill3waiting != 0) {
-			graphics2d.drawImage(impossible, gp.tileSize*2, gp.screenHeight - gp.tileSize, null);
+			graphics2d.drawImage(impossible, gp.tileSize*2, SCREEN_HEIGHT-TILE_SIZE, null);
 		}
 		
 		if (mp > skill3MP && keyHandler.Askill3IsActive && skill3waiting == 0) {
@@ -466,7 +466,7 @@ public class Fighter extends Entity implements GameInterface{
 			graphics2d.setColor(Color.white);
 			
 			int length = (int)graphics2d.getFontMetrics().getStringBounds(Integer.toString(skill3waiting/60), graphics2d).getWidth();
-			graphics2d.drawString(Integer.toString(skill3waiting/60), gp.tileSize*2 + gp.tileSize/2 - length/2, gp.screenHeight - gp.tileSize/2);
+			graphics2d.drawString(Integer.toString(skill3waiting/60), gp.tileSize*2 + gp.tileSize/2 - length/2, SCREEN_HEIGHT-TILE_SIZE/2);
 		}
 		
 		if (skill3waiting == 0) {
