@@ -11,7 +11,7 @@ import main.KeyHandler;
 
 public class Boss1 extends Entity{
 
-	private final int defaultHP = 100;
+	private final int defaultHP = 200;
 	private final int defaultMP = 100;
 	BufferedImage left1, left2, left3, left4, right1, right2, right3, right4;
 	BufferedImage up1, up2, up3, up4, down1, down2, down3, down4;
@@ -54,6 +54,11 @@ public class Boss1 extends Entity{
 //		action = "down";
 	}
 	
+	public void decreHp(int attack) {
+		System.out.println(attack);
+		hp -= attack;
+	}
+	
 	public void getboss1Image() { 
 		// scale x2 tileSize
 		right1 = setup("/boss/boss1_right_1", gp.tileSize * 2, gp.tileSize * 2);
@@ -92,7 +97,7 @@ public class Boss1 extends Entity{
 	
 	public void update(int [][] map) {
 		
-		if (!attacking) {
+		if (!attacking && f_attack==0) {
 			f++;
 			if (f % 120 == 0 || isBlocked(map, x, y)) { // go around square after every 2s or blocked by topographic
 //				System.out.println(f); 
@@ -109,16 +114,17 @@ public class Boss1 extends Entity{
 				x -= speed;
 			else y += speed;
 			
-//			update self area
-			selfArea[0] = x + 16;
-			selfArea[1] = y + 10;
-			selfArea[2] = x + 64;
-			selfArea[3] = y + 76;			
+//			update self area		
 		}
 		else {
 			f_attack++;
+			f_attack %= 120;
 //			System.out.println(f_attack);
 		}
+		selfArea[0] = x + 16;
+		selfArea[1] = y + 10;
+		selfArea[2] = x + 64;
+		selfArea[3] = y + 76;	
 
 	}
 
@@ -143,15 +149,10 @@ public class Boss1 extends Entity{
 		return false;
 	}
 	
-
-//	void attack() {
-//		
-//	}
-	
 	public void draw(Graphics2D graphics2d) {
 		drawHealthBar(graphics2d);
 		
-		if (!attacking) {
+		if (!attacking && f_attack == 0) {
 			if (direction == 180) {
 				
 				if (f % 60 < 15) {
@@ -214,11 +215,11 @@ public class Boss1 extends Entity{
 		}
 		else {
 			if (directionAttack == 0) {
-				
-				selfArea[0] = x + 16;
-				selfArea[1] = y + 10;
-				selfArea[2] = x + gp.tileSize*2;
-				selfArea[3] = y + 76;
+//				
+//				selfArea[0] = x + 16;
+//				selfArea[1] = y + 10;
+//				selfArea[2] = x + gp.tileSize*2;
+//				selfArea[3] = y + 76;
 				
 				if (f_attack % 120 < 20) {
 					graphics2d.drawImage(attack_right1, x-gp.worldx, y-gp.worldy, null);
@@ -234,6 +235,7 @@ public class Boss1 extends Entity{
 					damageArea[1] = gp.tileSize - 10;
 					damageArea[2] = gp.tileSize * 2 + 30;
 					damageArea[3] = gp.tileSize + 30;
+					if (f_attack == 79) gp.monsterTakeAttack(attack);
 					graphics2d.drawImage(attack_right4, x-gp.worldx, y-gp.worldy, null);
 				}
 				else {
@@ -242,10 +244,10 @@ public class Boss1 extends Entity{
 			}
 			if (directionAttack == 180) {
 				
-				selfArea[0] = x - gp.tileSize * 2;
-				selfArea[1] = y + 10;
-				selfArea[2] = x + gp.tileSize * 2;
-				selfArea[3] = y + 76;
+//				selfArea[0] = x;
+//				selfArea[1] = y + 10;
+//				selfArea[2] = x + gp.tileSize * 2;
+//				selfArea[3] = y + 76;
 				
 				if (f_attack % 120 < 20) {
 					graphics2d.drawImage(attack_left1, x - gp.tileSize * 2-gp.worldx, y-gp.worldy, null);
@@ -261,6 +263,7 @@ public class Boss1 extends Entity{
 					damageArea[1] = y + gp.tileSize - 10;
 					damageArea[2] = x + 30;
 					damageArea[3] = y + gp.tileSize + 30;
+					if (f_attack == 79) gp.monsterTakeAttack(attack);
 					graphics2d.drawImage(attack_left4, x - gp.tileSize * 2-gp.worldx, y-gp.worldy, null);
 				}
 				else {
@@ -278,7 +281,7 @@ public class Boss1 extends Entity{
 		
 		graphics2d.fillRoundRect(x-2-gp.worldx, y-5-gp.worldy, gp.tileSize * 2 + 4, 10, 4, 4);
 		graphics2d.setColor(Color.red);
-		graphics2d.fillRoundRect(x-gp.worldx, y-4-gp.worldy, (int)(hp/defaultHP * gp.tileSize * 2), 8, 4, 4);
+		graphics2d.fillRoundRect(x-gp.worldx, y-4-gp.worldy, (int)(hp*1.0/defaultHP * gp.tileSize * 2), 8, 4, 4);
 		
 	}
 }

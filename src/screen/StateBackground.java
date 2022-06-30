@@ -13,35 +13,35 @@ import map.Map;
 public class StateBackground {
 
 	GamePanel gp;
-	int level;
-	public int[][] mapdemo;
 	BufferedImage [] backgroundMap = new BufferedImage [5];
-	
-	public StateBackground(GamePanel gamePanel, int level) {
+	int level = 0;
+	int scaleX = 0;
+	int scaleY = 0;
+	public int [][] mapDemo;
+	public StateBackground(GamePanel gamePanel) {
 		this.gp = gamePanel;
-		this.level = level;
-		setup(level);
 	}
 	
 	
-	public void setup(int index) {
+	public void setup(int level, int scaleX, int scaleY) {
 		Map map = new Map();
-		mapdemo = map.world0;	
+		mapDemo = map.world0[level];
+		
+		this.level = level;
+		this.scaleX = scaleX;
+		this.scaleY = scaleY;
 		UtilityTool uTool = new UtilityTool();
 		try {
-			backgroundMap[0] = ImageIO.read(getClass().getResourceAsStream("/background/state1.png"));
-			backgroundMap[0] = uTool.scaleImage(backgroundMap[0], gp.tileSize*48, gp.tileSize*48);
-//			backgroundMap[1] = ImageIO.read(getClass().getResourceAsStream("/background/gametitle.png"));
-//			backgroundMap[2] = ImageIO.read(getClass().getResourceAsStream("/background/gametitle.png"));
-//			backgroundMap[3] = ImageIO.read(getClass().getResourceAsStream("/background/gametitle.png"));
-//			backgroundMap[4] = ImageIO.read(getClass().getResourceAsStream("/background/gametitle.png"));
+			backgroundMap[level] = ImageIO.read(getClass().getResourceAsStream("/background/state" + level + ".png"));
+			backgroundMap[level] = uTool.scaleImage(backgroundMap[level], gp.tileSize*scaleX, gp.tileSize*scaleY);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void draw(Graphics2D graphics2d, int x, int y) {
-		graphics2d.drawImage(backgroundMap[level], x, y, gp.tileSize * 48, gp.tileSize * 48, null);
+	public void draw(Graphics2D graphics2d, int level, int x, int y) {
+		graphics2d.drawImage(backgroundMap[level], x, y, gp.tileSize * scaleX, gp.tileSize * scaleY, null);
+//		graphics2d.drawIma
 	}
 
 }

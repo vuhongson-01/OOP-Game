@@ -23,7 +23,7 @@ public class KeyHandler implements KeyListener{
 		this.gp = gp;
 	}
 	@Override
-	public void keyTyped(KeyEvent e) {
+	public void keyTyped(KeyEvent e) { 
 		// TODO Auto-generated method stub
 		
 	}
@@ -36,53 +36,38 @@ public class KeyHandler implements KeyListener{
 		int code = e.getKeyCode();
 		
 //		GAME STATE
-		if (gp.gameState == gp.playState) {
 			if (code == KeyEvent.VK_P) {
-				if (gp.gameState != gp.pauseState)
-					gp.gameState = gp.pauseState;
-				else {
-					gp.gameState = gp.playState;
-				}
+				if (gp.gameState == gp.pauseState) gp.gameState = gp.playState;
+				else gp.gameState = gp.pauseState;
 			}
-			if (gp.gameState == gp.playState) {
-				if (code == KeyEvent.VK_W) {
-					System.out.println("D");
+			if (code == KeyEvent.VK_W) {
 					upPressed = true;
 				}
-				if (code == KeyEvent.VK_S) {
-					System.out.println("S");
+			if (code == KeyEvent.VK_S) {
 					downPressed = true;
 				}
-				if (code == KeyEvent.VK_A) {
-					System.out.println("A");
+			if (code == KeyEvent.VK_A) {
 					leftPressed = true;
 				}
-				if (code == KeyEvent.VK_D) {
-					System.out.println("D");
+			if (code == KeyEvent.VK_D) {
 					rightPressed = true;
 				}
-
-				if (code == KeyEvent.VK_F) {
+			if (code == KeyEvent.VK_F) {
 					attack = true;
 				}
-				if (code == KeyEvent.VK_1) {
+			if (code == KeyEvent.VK_1) {
 					Askill1IsActive = true;
 				}
-				if (code == KeyEvent.VK_2) {
+			if (code == KeyEvent.VK_2) {
 					Askill2IsActive = true;
 				}
-				if (code == KeyEvent.VK_3) {
+			if (code == KeyEvent.VK_3) {
 					Askill3IsActive = true;
 				}	
-			}
-			
-		}
-		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
 		int code = e.getKeyCode();
 		
 		if (code == KeyEvent.VK_W) {
@@ -109,7 +94,5 @@ public class KeyHandler implements KeyListener{
 		if (code == KeyEvent.VK_3) {
 			Askill3IsActive = false;
 		}
-		
 	}
-
 }

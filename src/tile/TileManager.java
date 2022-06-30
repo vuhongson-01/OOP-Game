@@ -26,7 +26,7 @@ public class TileManager {
 		this.level = level;
 		
 		Map map = new Map();
-		mapdemo = map.world0;
+		mapdemo = map.world0[level];
 		
 		UtilityTool uTool = new UtilityTool();
 		try {

@@ -17,8 +17,17 @@ public class Entity {
 	public int screenX, screenY;
 	public int speed;
 		
-	public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-	public BufferedImage leftAttack1, leftAttack2, rightAttack1, rightAttack2, upAttack1, upAttack2, downAttack1, downAttack2, skillAttack;
+	public BufferedImage up[] = new BufferedImage[10];
+	public BufferedImage down[] = new BufferedImage[10];
+	public BufferedImage left[] = new BufferedImage[10];
+	public BufferedImage right[] = new BufferedImage[10];
+	
+	public BufferedImage leftAttack[] = new BufferedImage[10];
+	public BufferedImage rightAttack[] = new BufferedImage[10];
+	public BufferedImage upAttack[] = new BufferedImage[10];
+	public BufferedImage downAttack[] = new BufferedImage[10];
+	
+	public BufferedImage skillAttack;
 	public String action, preAction;
 	
 	int f = 0;
