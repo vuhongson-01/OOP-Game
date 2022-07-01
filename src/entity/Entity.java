@@ -27,6 +27,7 @@ public class Entity {
 	public BufferedImage upAttack[] = new BufferedImage[10];
 	public BufferedImage downAttack[] = new BufferedImage[10];
 	
+	public BufferedImage died[] = new BufferedImage[10];
 	public BufferedImage skillAttack;
 	public String action, preAction;
 	

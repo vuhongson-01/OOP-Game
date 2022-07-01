@@ -22,6 +22,7 @@ import javax.swing.plaf.multi.MultiTextUI;
 //import entity.Fighter;
 import screen.StateBackground;
 import entity.Boss1;
+import entity.Boss3;
 import entity.Boss5;
 import entity.BossH;
 import entity.DarkKnight;
@@ -42,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 //	TileManager tileManager = new TileManager(this, 0);
 	StateBackground stateBackground;
 	DarkKnight player;
-	Boss5 monster;
+	Boss3 monster;
 	public UI ui = new UI(this);
 	
 //	player default position
@@ -117,7 +118,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	public void nextGameState() {
 		level++;
 		if (level == 0) {
-			monster = new Boss5(this);
+			monster = new Boss3(this);
 			worldx = 0;
 			worldy = 0;
 		}
@@ -193,7 +194,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	}
 	
 	
-	private void sensing(DarkKnight p, Boss5 m) {
+	private void sensing(DarkKnight p, Boss3 m) {
 		if (d(p.selfArea, m.selfArea) < TILE_SIZE*3/2) {
 			m.attacking = true;
 			if (m.f_attack == 0) {
