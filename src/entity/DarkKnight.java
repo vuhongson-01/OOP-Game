@@ -101,17 +101,18 @@ public class DarkKnight extends Entity implements GameInterface{
 	
 
 	public void update(int [][] map) { // update player's position
-		
 		f++;
-		
-//		selfCenterX = x + TILE_SIZE / 2;
-//		selfCenterY = y + TILE_SIZE / 2;
 		
 		if (f % 50 == 0) {
 			if (mp < 100)
 				mp++;		
 				f = 0;
 			}
+		
+		if (hp <= 0) {
+			System.out.println("End game");
+			gp.endGame();
+		}
 		
 		if (attacking == true) {
 			attacking();

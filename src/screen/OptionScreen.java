@@ -132,7 +132,7 @@ public class OptionScreen extends JPanel implements GameInterface{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 //				System.out.println("Playyyy");
-				GamePanel gamePanel = new GamePanel();
+				GamePanel gamePanel = new GamePanel(main);
 				main.newGame(gamePanel);
 
 			}

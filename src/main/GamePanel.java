@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -8,16 +9,21 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.sql.DataTruncation;
 import java.util.Currency;
 
 import java.lang.Math;
+import java.security.PublicKey;
 
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.plaf.multi.MultiTextUI;
+import javax.xml.crypto.dsig.keyinfo.PGPData;
 
 //import entity.Fighter;
 import screen.StateBackground;
@@ -40,7 +46,11 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 //	Create object
 	Thread gameThread;
 	KeyHandler keyHandler;
+	JPanel confirmBoard;
+	JPanel endGameBoard;
+	JPanel victoryBoard;
 //	TileManager tileManager = new TileManager(this, 0);
+	DemoMain main;
 	StateBackground stateBackground;
 	DarkKnight player;
 	Boss3 monster;
@@ -51,7 +61,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	public int worldy = 0;
 	
 	int playerSpeed = 4;
-	boolean isPause = false;
+	public boolean isPause = false;
 	private int level = -1;
 	
 //	setup FPS
@@ -63,43 +73,68 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	public final int playState = 1;
 	public final int pauseState = 2;
 	int sound = 1;
+	boolean visibleBoard = false;
 	
-	public GamePanel() {
-//	setup game panel
-		this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-		this.setBackground(Color.black);
-		this.setDoubleBuffered(true);
-		
-		JButton soundBtn = new JButton();
-		soundBtn.setFocusable(true);
-		setupButton(soundBtn, "res/button/soundBtnOpen.png", TILE_SIZE, TILE_SIZE, SCREEN_WIDTH - TILE_SIZE, TILE_SIZE*2);
-		
-		this.add(soundBtn);
-
+	public GamePanel(DemoMain main) {
+		//	setup game panel
+    	setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
+		setBackground(MAIN_COLOR);
+		setDoubleBuffered(true);
+		setFocusable(true);
+		setLayout(null);
+		nextGameState();
 		keyHandler = new KeyHandler(this);
-		
-		
-		this.setFocusable(true);
 		stateBackground = new StateBackground(this);
 		stateBackground.setup(0, 48, 48);
 		player = new DarkKnight(this, keyHandler, stateBackground.mapDemo, 4*TILE_SIZE, 4*TILE_SIZE);
-		nextGameState();
+		this.main = main;
 		
-		this.addKeyListener(keyHandler);
+		JPanel state = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g){
+				super.paintComponent(g);
+				Graphics2D graphics2d = (Graphics2D) g;
+				
+				//		TILE		
+						stateBackground.draw(graphics2d,level, -worldx, -worldy);
+						
+				//		PLAYER
+						player.draw(graphics2d);
+						
+				//		MONSTER
+						monster.draw(graphics2d);
+
+					if (isPause) {
+						String text = "PAUSE";
+						
+						int x, y;
+						graphics2d.setColor(Color.white);
+						graphics2d.setFont(new Font("courier", Font.BOLD, 30));
+						x = getXForCenterMetrics(graphics2d, text);
+						y = SCREEN_HEIGHT/2;
+						
+						g.drawString(text, x, y);
+					}
+					graphics2d.dispose();
+			}
+		};
+		state.setBounds(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		
+		JButton soundBtn = new JButton();
+		setupButton(soundBtn, "res/button/soundBtnOpen.png", TILE_SIZE, TILE_SIZE, SCREEN_WIDTH - 2*TILE_SIZE, 0);
+		soundBtn.setFocusable(false);
 		soundBtn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
 				sound = 1-sound;
 				if (sound == 0) {
 					muteSound();
-					setupButton(soundBtn, "res/button/soundBtnClose.png", TILE_SIZE, TILE_SIZE, SCREEN_WIDTH - TILE_SIZE, 0);
+					setupButton(soundBtn, "res/button/soundBtnMute.png", TILE_SIZE, TILE_SIZE, SCREEN_WIDTH - 2*TILE_SIZE, 0);
 				}
 				else {
 					openSound();
-					setupButton(soundBtn, "res/button/soundBtnOpen.png", TILE_SIZE, TILE_SIZE, SCREEN_WIDTH - TILE_SIZE, 0);
+					setupButton(soundBtn, "res/button/soundBtnOpen.png", TILE_SIZE, TILE_SIZE, SCREEN_WIDTH - 2*TILE_SIZE, 0);
 				}
 				
 			}
@@ -114,7 +149,200 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 				System.out.println("close sound");
 			}
 		});
+		
+		
+		confirmBoard = new JPanel();
+		createConfirmBoard(confirmBoard);
+		
+		endGameBoard = new JPanel();
+		createEndGameBoard(endGameBoard);
+		
+		victoryBoard = new JPanel();
+		createVictoryBoard(victoryBoard);
+		
+		JButton quitBtn = new JButton();
+		setupButton(quitBtn, "res/button/quit.png", TILE_SIZE, TILE_SIZE, SCREEN_WIDTH - TILE_SIZE, 0);
+		quitBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				confirmBoard.setVisible(true);
+				isPause = true;
+			}
+		});
+		
+
+		this.add(soundBtn);
+		this.add(confirmBoard);
+		this.add(endGameBoard);
+		this.add(victoryBoard);
+		this.add(quitBtn);
+		this.add(state);
+		this.addKeyListener(keyHandler);
 	}
+	
+	
+	private void createEndGameBoard(JPanel endGameBoard) {
+		endGameBoard.setPreferredSize(new Dimension(TILE_SIZE*10, TILE_SIZE*8));
+		endGameBoard.setDoubleBuffered(true);
+		endGameBoard.setFocusable(true);
+		endGameBoard.setLayout(null);
+		endGameBoard.setBounds(SCREEN_WIDTH/2-TILE_SIZE*5 , SCREEN_HEIGHT/2-TILE_SIZE*4, TILE_SIZE*10, TILE_SIZE*8);
+		endGameBoard.setOpaque(false);
+    	
+    	
+		JPanel board = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				// TODO Auto-generated method stub
+				super.paintComponent(g);
+				Graphics2D graphics2d = (Graphics2D) g;
+				UtilityTool uTool = new UtilityTool();
+				try {
+					BufferedImage bgrImg = ImageIO.read(getClass().getResourceAsStream("/background/smallBoard.png"));
+					bgrImg = uTool.scaleImage(bgrImg, TILE_SIZE*10, TILE_SIZE*8);
+					graphics2d.drawImage(bgrImg, 0, 0, TILE_SIZE*10, TILE_SIZE*8, null);
+					graphics2d.setColor(Color.white);
+					graphics2d.setFont(new Font("courier", Font.BOLD, 18));
+					graphics2d.drawString("You are Defeat", TILE_SIZE, 3*TILE_SIZE);
+					graphics2d.drawString("Press the button to quit the game!", TILE_SIZE, 7*TILE_SIZE/2);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				graphics2d.dispose();
+			}
+		};
+		board.setOpaque(false);
+		board.setBounds(0, 0, TILE_SIZE*10, TILE_SIZE*8);
+		
+		
+		JButton xbt = new JButton();
+		setupButton(xbt, "res/button/quit.png", TILE_SIZE*2, TILE_SIZE*2, 4*TILE_SIZE, 4*TILE_SIZE);
+		xbt.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				main.backScreen();
+				main.backScreen();
+			}
+		});
+		
+		endGameBoard.add(xbt);
+		endGameBoard.add(board);
+		endGameBoard.setVisible(false);
+	}
+	
+	private void createVictoryBoard(JPanel endGameBoard) {
+		endGameBoard.setPreferredSize(new Dimension(TILE_SIZE*12, TILE_SIZE*10));
+		endGameBoard.setDoubleBuffered(true);
+		endGameBoard.setFocusable(true);
+		endGameBoard.setLayout(null);
+		endGameBoard.setBounds(SCREEN_WIDTH/2-TILE_SIZE*6 , SCREEN_HEIGHT/2-TILE_SIZE*5, TILE_SIZE*12, TILE_SIZE*10);
+		endGameBoard.setOpaque(false);
+    	
+    	
+		JPanel board = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				// TODO Auto-generated method stub
+				super.paintComponent(g);
+				Graphics2D graphics2d = (Graphics2D) g;
+				UtilityTool uTool = new UtilityTool();
+				try {
+					BufferedImage bgrImg = ImageIO.read(getClass().getResourceAsStream("/background/board.png"));
+					bgrImg = uTool.scaleImage(bgrImg, TILE_SIZE*12, TILE_SIZE*10);
+					graphics2d.drawImage(bgrImg, 0, 0, TILE_SIZE*12, TILE_SIZE*10, null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				graphics2d.dispose();
+			}
+		};
+		board.setOpaque(false);
+		board.setBounds(0, 0, TILE_SIZE*12, TILE_SIZE*10);
+		
+		
+		JButton xbt = new JButton();
+		setupButton(xbt, "res/button/quit.png", TILE_SIZE*2, TILE_SIZE*2, 5*TILE_SIZE, 6*TILE_SIZE);
+		xbt.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				main.backScreen();
+				main.backScreen();
+			}
+		});
+		
+		endGameBoard.add(xbt);
+		endGameBoard.add(board);
+		endGameBoard.setVisible(true);
+	}
+
+	void createConfirmBoard(JPanel settingBoard) {
+    	settingBoard.setPreferredSize(new Dimension(TILE_SIZE*10, TILE_SIZE*8));
+    	settingBoard.setDoubleBuffered(true);
+    	settingBoard.setFocusable(true);
+    	settingBoard.setLayout(null);
+    	settingBoard.setBounds(SCREEN_WIDTH/2-TILE_SIZE*5 , SCREEN_HEIGHT/2-TILE_SIZE*4, TILE_SIZE*10, TILE_SIZE*8);
+    	settingBoard.setOpaque(false);
+    	 	
+		JPanel board = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				// TODO Auto-generated method stub
+				super.paintComponent(g);
+				Graphics2D graphics2d = (Graphics2D) g;
+				UtilityTool uTool = new UtilityTool();
+				try {
+					BufferedImage bgrImg = ImageIO.read(getClass().getResourceAsStream("/background/smallBoard.png"));
+					bgrImg = uTool.scaleImage(bgrImg, TILE_SIZE*10, TILE_SIZE*8);
+					graphics2d.drawImage(bgrImg, 0, 0, TILE_SIZE*10, TILE_SIZE*8, null);
+					graphics2d.setColor(Color.white);
+					graphics2d.setFont(new Font("courier", Font.BOLD, 18));
+					graphics2d.drawString("Are you sure want to quit?", 2*TILE_SIZE, 7*TILE_SIZE/2);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				graphics2d.dispose();
+			}
+		};
+		board.setOpaque(false);
+		board.setBounds(0, 0, TILE_SIZE*10, TILE_SIZE*8);
+		
+		
+		JButton xbt = new JButton();
+		setupButton(xbt, "res/button/xButton.png", TILE_SIZE, TILE_SIZE, 6*TILE_SIZE, 4*TILE_SIZE);
+		xbt.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				settingBoard.setVisible(false);
+				isPause = false;
+			}
+		});
+		
+		JButton vbt = new JButton();
+		setupButton(vbt, "res/button/vButton.png", TILE_SIZE, TILE_SIZE, 3*TILE_SIZE, 4*TILE_SIZE);
+		vbt.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				main.backScreen();
+				main.backScreen();
+			}
+		});
+		
+		
+		settingBoard.add(xbt);
+		settingBoard.add(vbt);
+		settingBoard.add(board);
+		settingBoard.setVisible(false);
+	}
+	
 	public void nextGameState() {
 		level++;
 		if (level == 0) {
@@ -137,6 +365,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 		button.setContentAreaFilled(false);
 		button.setBorderPainted(false);
 		button.setBounds(x, y, width, height);
+		button.setFocusable(false);
     }
 	
     private static Icon resizeIcon(ImageIcon icon, int resizedWidth, int resizedHeight) {
@@ -185,7 +414,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	
 	
 	public void update() {
-		if (gameState == playState) {
+		if (!isPause) {
 			player.update(stateBackground.mapDemo);
 			monster.update(stateBackground.mapDemo);
 
@@ -211,7 +440,6 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	}
 
 	private boolean intersec(int[] Area1, int[] Area2) {
-//		System.out.println(Area1[0] + "," + Area1[1] + " " + Area1[2] + "," + Area1[3] + " / " + Area2[0] + "," + Area2[1] + " " + Area2[2] + "," + Area2[3]);
 			if (Area1[0] < Area2[2] && Area2[0] < Area1[0] && Area1[1] > Area2[1] && Area1[1] < Area2[3]) return true;
 			if (Area1[2] < Area2[2] && Area2[0] < Area1[2] && Area1[1] > Area2[1] && Area1[1] < Area2[3]) return true;
 			if (Area1[0] < Area2[2] && Area2[0] < Area1[0] && Area1[3] > Area2[1] && Area1[3] < Area2[3]) return true;
@@ -241,36 +469,6 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 		return distance;
 	}
 	
-//	draw object in screen
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		
-		Graphics2D graphics2d = (Graphics2D) g;
-		
-		if (gameState == playState) {
-	//		TILE		
-			stateBackground.draw(graphics2d,level, -worldx, -worldy);
-			
-	//		PLAYER
-			player.draw(graphics2d);
-			
-	//		MONSTER
-			monster.draw(graphics2d);
-		}
-		else if (gameState == pauseState) {
-			String text = "PAUSE";
-			
-			int x, y;
-			graphics2d.setColor(Color.white);
-			graphics2d.setFont(new Font("courier", Font.BOLD, 30));
-			x = getXForCenterMetrics(graphics2d, text);
-			y = SCREEN_HEIGHT/2;
-			
-			g.drawString(text, x, y);
-		}
-
-		graphics2d.dispose();
-	}
 	public int getXForCenterMetrics(Graphics2D graphics2d, String text) {
 		int length = (int)graphics2d.getFontMetrics().getStringBounds(text, graphics2d).getWidth();
 		int x = SCREEN_WIDTH/2 - length/2;
@@ -298,5 +496,10 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 			System.out.println("attack " + attack );
 			player.decreHP(attack);
 		}
+	}
+
+
+	public void endGame() {
+		endGameBoard.setVisible(true);
 	}
 }

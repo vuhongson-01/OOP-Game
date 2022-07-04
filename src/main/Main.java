@@ -18,7 +18,7 @@ public class Main {
 		window.setResizable(false);
 
 //		create game panel
-		GamePanel gamePanel = new GamePanel();
+		GamePanel gamePanel = new GamePanel(null);
 		
 		window.add(gamePanel);
 		window.pack();
