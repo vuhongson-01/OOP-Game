@@ -105,7 +105,8 @@ public class OptionScreen extends JPanel implements GameInterface{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("PLAYER OPTION");
+				main.pushPlayerOptionScreen();
+				main.nextScreen();
 				
 			}
 		});
@@ -134,7 +135,9 @@ public class OptionScreen extends JPanel implements GameInterface{
 //				System.out.println("Playyyy");
 				GamePanel gamePanel = new GamePanel(main);
 				main.newGame(gamePanel);
-
+				
+				//reset setup
+				main.hard = 1;
 			}
 		});
 		

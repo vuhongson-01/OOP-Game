@@ -1,5 +1,6 @@
 package screen;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class StateBackground {
 		Map map = new Map();
 		mapDemo = map.world0[level];
 		
+
 		this.level = level;
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
@@ -40,8 +42,17 @@ public class StateBackground {
 	}
 	
 	public void draw(Graphics2D graphics2d, int level, int x, int y) {
-		graphics2d.drawImage(backgroundMap[level], x, y, gp.tileSize * scaleX, gp.tileSize * scaleY, null);
-//		graphics2d.drawIma
+
+		graphics2d.drawImage(backgroundMap[level], x, y, gp.tileSize * scaleX, gp.tileSize * scaleY, null);		
+		
+		graphics2d.setColor(Color.black);
+		for (int i = 0; i < mapDemo.length; i++) {
+			for (int j = 0; j < mapDemo[i].length; j++) {
+				if (mapDemo[i][j] == 1) {
+					graphics2d.drawString("XXX", j*48 + x + 20, y + i*48 + 20);
+				}
+			}
+		}
 	}
 
 }

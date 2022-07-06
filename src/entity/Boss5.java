@@ -8,44 +8,53 @@ import java.sql.Struct;
 
 import main.GameInterface;
 import main.GamePanel;
-import main.KeyHandler;
 
-public class Boss5 extends Entity implements GameInterface{
+public class Boss5 extends Entity{
 
-	private final int defaultHP = 100;
-	private final int defaultMP = 100;
-	BufferedImage died1, died2,died3;
-	int direction = 0;
+	private int defaultHP = 1000;
 	
 	public int f_attack = 0;
+	public int f_die = 0;
 	
 	String name;
 	
 	
-	public Boss5(GamePanel gp) {
+	public Boss5(GamePanel gp, int hard, int firstLocX, int firstLocY) {
 		this.gp = gp;
 		
 		name = "LONG";
-		setDefaultValue();
+		setDefaultValue(hard, firstLocX, firstLocY);
 		selfArea = new int[4];
 		damageArea = new int[4];
 		getboss5Image();
 	}
 	
-	public void setDefaultValue() {
+	public void setDefaultValue(int hard, int firstLocX, int firstLocY) {
 //		location for draw image
-		x = 500;
-		y = 100;
+		initX = firstLocX;
+		initY = firstLocY;
+		x = initX;
+		y = initY;	
 		
+		if(hard == 1) {
+			defaultHP = 1000;
+			attack = 30;
+			defense = 50;
+			speed = 1;
+		}
+		else {
+			defaultHP = 1500;
+			attack = 45;
+			defense = 60;
+			speed = 2;
+		}
 		hp = defaultHP;
-//		hp = 250;
-		mp = defaultMP;
-		attack = 15;
-		defense = 10;
-		speed = 1;
+		attackRange = 2 * TILE_SIZE;
+		attackSpeed = 120;
+//		runSpeed = 2;
 //		action = "down";
 	}
-	
+
 	public void getboss5Image() { 
 		// scale x2 tileSize
 		for (int i = 0; i < 4; i++){
@@ -57,42 +66,44 @@ public class Boss5 extends Entity implements GameInterface{
 			leftAttack[i] = setup("/boss/Boss5_attack_left_" + (i+1),TILE_SIZE * 4,TILE_SIZE * 4);
 		}
 		
-		died1 = setup("/boss/Boss5_died_1",gp.tileSize * 4,TILE_SIZE * 4);
-		died2 = setup("/boss/Boss5_died_2",gp.tileSize * 4,TILE_SIZE * 4);
-		died3 = setup("/boss/Boss5_died_3",gp.tileSize * 4,TILE_SIZE * 4);
+		die[0] = setup("/boss/Boss5_died_1",TILE_SIZE * 4,TILE_SIZE * 4);
+		die[1] = setup("/boss/Boss5_died_2",TILE_SIZE * 4,TILE_SIZE * 4);
+		die[2] = setup("/boss/Boss5_died_3",TILE_SIZE * 4,TILE_SIZE * 4);
 	}
 	
 	public void update(int [][] map) {
-		
-		if (!attacking) {
+		if(hp > 0) {
 			f++;
-			if (f % 240 == 0 || isBlocked(map,x,y)) { // go around square after every 2s or blocked by topographic
-//				System.out.println(f); 
-				direction = (direction + 90) % 360;
-				f = 0;
+			selfArea[0] = x;
+			selfArea[1] = y;
+			selfArea[2] = x + 4 * TILE_SIZE;
+			selfArea[3] = y + 4 * TILE_SIZE;
+			if((initX - x)*(initX - x) + (initY - y)*(initY - y) < 100 * TILE_SIZE * TILE_SIZE) {
+				if (!attacking) {
+					if(!provoked) {
+						if (f % 240 == 0 || isBlocked(map, x, y)) { // go around square after every 2s or blocked by topographic
+							direction = (direction + 90) % 360;
+							f = 0;
+						}
+						
+						if (direction == 0) 
+							x += speed;							
+						else if (direction == 90)
+							y -= speed;
+						else if (direction == 180)
+							x -= speed;
+						else if (direction == 270) y += speed;
+					}
+				}else {
+					f_attack++;
+				}
+			}else {
+				x = initX;
+				y = initY;
 			}
-				
-			if (direction == 0) {
-				x += speed;	
-			}else if(direction == 90) {
-				y -= speed;
-			}else if(direction == 180) {
-				x -= speed;
-			} else {
-				y += speed;
-			}
-			
-//			update self area
-			selfArea[0] = x + 16;
-			selfArea[1] = y + 10;
-			selfArea[2] = x + 64;
-			selfArea[3] = y + 76;			
+		}else {
+			f_die++;
 		}
-		else {
-			f_attack++;
-//			System.out.println(f_attack);
-		}
-
 	}
 
 	private boolean isBlocked(int[][] map, int x, int y) {
@@ -118,107 +129,110 @@ public class Boss5 extends Entity implements GameInterface{
 	}
 
 	public void draw(Graphics2D graphics2d) {
-		drawHealthBar(graphics2d);
-		
-		if (!attacking) {
-			if (direction == 180) {
-				if (f % 60 < 15) {
-					graphics2d.drawImage(left[0], x-gp.worldx, y-gp.worldx, null);
+		if(hp > 0) {
+			drawHealthBar(graphics2d);
+			if (!attacking) {
+				if (direction == 180) {
+					if (f % 60 < 15) {
+						graphics2d.drawImage(left[0], x-gp.worldx, y-gp.worldy, null);
+					}
+					else if (f % 60 < 30){
+						graphics2d.drawImage(left[1], x-gp.worldx, y-gp.worldy, null);
+					}	
+					else if (f % 60 < 45){
+						graphics2d.drawImage(left[2], x-gp.worldx, y-gp.worldy, null);
+					}
+					else {
+						graphics2d.drawImage(left[3], x-gp.worldx, y-gp.worldy, null);
+					}	
 				}
-				else if (f % 60 < 30){
-					graphics2d.drawImage(left[1], x-gp.worldx, y-gp.worldy, null);
-				}	
-				else if (f % 60 < 45){
-					graphics2d.drawImage(left[2], x-gp.worldx, y-gp.worldy, null);
+				else if (direction == 0){
+					if (f % 60 < 15) {
+						graphics2d.drawImage(right[0], x-gp.worldx, y-gp.worldy, null);
+					}
+					else if (f % 60 < 30 ){
+						graphics2d.drawImage(right[1], x-gp.worldx, y-gp.worldy, null);
+					}	
+					else if (f % 60 < 45){
+						graphics2d.drawImage(right[2], x-gp.worldx, y-gp.worldy, null);
+					} 
+					else {
+						graphics2d.drawImage(right[3], x-gp.worldx, y-gp.worldy, null);
+					}
 				}
-				else {
-					graphics2d.drawImage(left[3], x-gp.worldx, y-gp.worldy, null);
-				}	
-			}
-			else if (direction == 0){
-				if (f % 60 < 15) {
-					graphics2d.drawImage(right[0], x-gp.worldx, y-gp.worldy, null);
+				else if(direction == 90) {
+					if (f % 60 < 15) {
+						graphics2d.drawImage(up[0], x-gp.worldx, y-gp.worldy, null);
+					}
+					else if (f % 60 < 30 ){
+						graphics2d.drawImage(up[1], x-gp.worldx, y-gp.worldy, null);
+					}	
+					else if (f % 60 < 45){
+						graphics2d.drawImage(up[2], x-gp.worldx, y-gp.worldy, null);
+					} 
+					else {
+						graphics2d.drawImage(up[3], x-gp.worldx, y-gp.worldy, null);
+					}
 				}
-				else if (f % 60 < 30 ){
-					graphics2d.drawImage(right[1], x-gp.worldx, y-gp.worldy, null);
-				}	
-				else if (f % 60 < 45){
-					graphics2d.drawImage(right[2], x-gp.worldx, y-gp.worldy, null);
-				} 
-				else {
-					graphics2d.drawImage(right[3], x-gp.worldx, y-gp.worldy, null);
-				}
-			}
-			else if(direction == 90) {
-				if (f % 60 < 15) {
-					graphics2d.drawImage(up[0], x-gp.worldx, y-gp.worldy, null);
-				}
-				else if (f % 60 < 30 ){
-					graphics2d.drawImage(up[1], x-gp.worldx, y-gp.worldy, null);
-				}	
-				else if (f % 60 < 45){
-					graphics2d.drawImage(up[2], x-gp.worldx, y-gp.worldy, null);
-				} 
-				else {
-					graphics2d.drawImage(up[3], x-gp.worldx, y-gp.worldy, null);
+				else if(direction == 270){
+					if (f % 60 < 15) {
+						graphics2d.drawImage(down[0], x-gp.worldx, y-gp.worldy, null);
+					}
+					else if (f % 60 < 30 ){
+						graphics2d.drawImage(down[1], x-gp.worldx, y-gp.worldy, null);
+					}	
+					else if (f % 60 < 45){
+						graphics2d.drawImage(down[2], x-gp.worldx, y-gp.worldy, null);
+					} 
+					else {
+						graphics2d.drawImage(down[3], x-gp.worldx, y-gp.worldy, null);
+					}
 				}
 			}
 			else {
-				if (f % 60 < 15) {
-					graphics2d.drawImage(down[0], x-gp.worldx, y-gp.worldy, null);
+				if (directionAttack == 0) {
+					if (f_attack % attackSpeed < attackSpeed/5) {
+						graphics2d.drawImage(rightAttack[0], x-gp.worldx, y-gp.worldy, null);
+					}
+					else if (f_attack % attackSpeed < attackSpeed*2/5){
+						graphics2d.drawImage(rightAttack[1], x-gp.worldx, y-gp.worldy, null);
+					}	
+					else if (f_attack % attackSpeed < attackSpeed*3/5){
+						damageArea[0] = x + 2 * TILE_SIZE;
+						damageArea[1] = y;
+						damageArea[2] = x + 4 * TILE_SIZE;
+						damageArea[3] = y + 4 * TILE_SIZE ;
+						graphics2d.drawImage(rightAttack[2], x-gp.worldx, y-gp.worldy, null);
+						if(f_attack % attackSpeed == attackSpeed*7/12) gp.bossTakeAttack(damageArea, attack);
+					}
+					else {
+						graphics2d.drawImage(rightAttack[3], x-gp.worldx, y-gp.worldy, null);
+					}	
 				}
-				else if (f % 60 < 30 ){
-					graphics2d.drawImage(down[1], x-gp.worldx, y-gp.worldy, null);
-				}	
-				else if (f % 60 < 45){
-					graphics2d.drawImage(down[2], x-gp.worldx, y-gp.worldy, null);
-				} 
-				else {
-					graphics2d.drawImage(down[3], x-gp.worldx, y-gp.worldy, null);
-				}
-			}
-		}
-		else {
-			if (directionAttack == 0) {
-				if (f_attack % 60 < 12) {
-					graphics2d.drawImage(rightAttack[0], x-gp.worldx, y-gp.worldy, null);
-				}
-				else if (f_attack % 60 < 24){
-					graphics2d.drawImage(rightAttack[1], x-gp.worldx, y-gp.worldy, null);
-				}	
-				else if (f_attack % 60 < 36){
-					graphics2d.drawImage(rightAttack[2], x-gp.worldx, y-gp.worldy, null);
-				}
-				else {
-					graphics2d.drawImage(rightAttack[3], x-gp.worldx, y-gp.worldy, null);
-				}	
-			}
-			if (directionAttack == 180) {
-				if (f_attack % 60 < 12) {
-					graphics2d.drawImage(leftAttack[0], x-gp.worldx , y-gp.worldy, null);
-				}
-				else if (f_attack % 60 < 24){
-					graphics2d.drawImage(leftAttack[1], x-gp.worldx , y-gp.worldy, null);
-				}	
-				else if (f_attack % 60 < 36){
-					graphics2d.drawImage(leftAttack[2], x-gp.worldx , y-gp.worldy, null);
-				}
-				else{
-					graphics2d.drawImage(leftAttack[3], x-gp.worldx , y-gp.worldy, null);
+				if (directionAttack == 180) {
+					if (f_attack % attackSpeed < attackSpeed/5) {
+						graphics2d.drawImage(leftAttack[0], x-gp.worldx , y-gp.worldy, null);
+					}
+					else if (f_attack % attackSpeed < attackSpeed*2/5){
+						graphics2d.drawImage(leftAttack[1], x-gp.worldx , y-gp.worldy, null);
+					}	
+					else if (f_attack % attackSpeed < attackSpeed*3/5){
+						damageArea[0] = x;
+						damageArea[1] = y;
+						damageArea[2] = x + 2 * TILE_SIZE;
+						damageArea[3] = y + 4 * TILE_SIZE ;
+						graphics2d.drawImage(leftAttack[2], x-gp.worldx , y-gp.worldy, null);
+						if(f_attack % attackSpeed == attackSpeed*7/12) gp.bossTakeAttack(damageArea, attack);
+					}
+					else{
+						graphics2d.drawImage(leftAttack[3], x-gp.worldx , y-gp.worldy, null);
+					}
 				}
 			}
-		}
-		
-		if(hp == 0) {
-			if(f % 120 < 30) {
-				graphics2d.drawImage(died1, x-gp.worldx , y-gp.worldy, null);
-			}
-			else if(f % 120 < 60 ) {
-				graphics2d.drawImage(died2, x-gp.worldx , y-gp.worldy, null);
-			}
-			else {
-				graphics2d.drawImage(died3, x-gp.worldx , y-gp.worldy, null);
-			}
+		}else {
+			if(f_die < 30) graphics2d.drawImage(die[0], x-gp.worldx , y-gp.worldy, null);
+			else if(f_die < 60) graphics2d.drawImage(die[1], x-gp.worldx , y-gp.worldy, null);
+			else if(f_die < 90) graphics2d.drawImage(die[2], x-gp.worldx , y-gp.worldy, null);
 		}
 	}
 	public void drawHealthBar(Graphics2D graphics2d) {

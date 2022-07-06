@@ -67,8 +67,6 @@ public class KeyHandler implements KeyListener{
 			if (code == KeyEvent.VK_P) {
 				gp.isPause = !gp.isPause;
 			}
-			if (code == KeyEvent.VK_SPACE) {
-			}
 	}
 
 	@Override

@@ -30,9 +30,12 @@ import screen.StateBackground;
 import entity.Boss1;
 import entity.Boss3;
 import entity.Boss5;
-import entity.BossH;
+import entity.Boss4;
 import entity.DarkKnight;
 import entity.Entity;
+import entity.Fighter;
+import entity.Monster;
+import entity.SpearKnight;
 import tile.TileManager;
 
 
@@ -52,15 +55,17 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 //	TileManager tileManager = new TileManager(this, 0);
 	DemoMain main;
 	StateBackground stateBackground;
-	DarkKnight player;
-	Boss3 monster;
+	Boss5 monster;
+	CreateMonster createMonster;
+	Entity list[], hero;
+	
 	public UI ui = new UI(this);
 	
-//	player default position
+//	hero default position
 	public int worldx = 0;
 	public int worldy = 0;
 	
-	int playerSpeed = 4;
+	int heroSpeed = 4;
 	public boolean isPause = false;
 	private int level = -1;
 	
@@ -82,13 +87,27 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 		setDoubleBuffered(true);
 		setFocusable(true);
 		setLayout(null);
-		nextGameState();
-		keyHandler = new KeyHandler(this);
-		stateBackground = new StateBackground(this);
-		stateBackground.setup(0, 48, 48);
-		player = new DarkKnight(this, keyHandler, stateBackground.mapDemo, 4*TILE_SIZE, 4*TILE_SIZE);
-		this.main = main;
 		
+		System.out.println(main.hard);
+		
+		this.main = main;
+		createMonster = new CreateMonster(this, main.hard);
+		stateBackground = new StateBackground(this);
+		keyHandler = new KeyHandler(this);
+		
+		if (main.hero == 1) {
+			hero = new DarkKnight(this, keyHandler, stateBackground.mapDemo, 4*TILE_SIZE, 4*TILE_SIZE);	
+		}
+		else if (main.hero == 2) {
+			hero = new Fighter(this, keyHandler, stateBackground.mapDemo, 4*TILE_SIZE, 4*TILE_SIZE);
+		}
+		else if (main.hero == 3) {
+			hero = new SpearKnight(this, keyHandler, stateBackground.mapDemo, 4*TILE_SIZE, 4*TILE_SIZE);
+		}
+			
+	
+		nextGameState();
+	
 		JPanel state = new JPanel() {
 			@Override
 			protected void paintComponent(Graphics g){
@@ -98,11 +117,11 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 				//		TILE		
 						stateBackground.draw(graphics2d,level, -worldx, -worldy);
 						
-				//		PLAYER
-						player.draw(graphics2d);
+						for (int i = 0; i < 2; i++) {
+							list[i].draw(graphics2d);
+						}
 						
-				//		MONSTER
-						monster.draw(graphics2d);
+						hero.draw(graphics2d);
 
 					if (isPause) {
 						String text = "PAUSE";
@@ -150,7 +169,6 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 			}
 		});
 		
-		
 		confirmBoard = new JPanel();
 		createConfirmBoard(confirmBoard);
 		
@@ -171,7 +189,6 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 			}
 		});
 		
-
 		this.add(soundBtn);
 		this.add(confirmBoard);
 		this.add(endGameBoard);
@@ -277,7 +294,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 		
 		endGameBoard.add(xbt);
 		endGameBoard.add(board);
-		endGameBoard.setVisible(true);
+		endGameBoard.setVisible(false);
 	}
 
 	void createConfirmBoard(JPanel settingBoard) {
@@ -336,7 +353,6 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 			}
 		});
 		
-		
 		settingBoard.add(xbt);
 		settingBoard.add(vbt);
 		settingBoard.add(board);
@@ -345,14 +361,15 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	
 	public void nextGameState() {
 		level++;
+		list = createMonster.listEntities[level];
 		if (level == 0) {
-			monster = new Boss3(this);
+			stateBackground.setup(0, 48, 48);
 			worldx = 0;
 			worldy = 0;
 		}
 		if (level == 1) {
 			stateBackground.setup(level, 32, 32);
-			player.setDefaultValue(TILE_SIZE, TILE_SIZE*10);
+			hero.setDefaultValue(TILE_SIZE, TILE_SIZE*10);
 			worldx = 0;
 			worldy = 0;
 		}
@@ -368,7 +385,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 		button.setFocusable(false);
     }
 	
-    private static Icon resizeIcon(ImageIcon icon, int resizedWidth, int resizedHeight) {
+    private Icon resizeIcon(ImageIcon icon, int resizedWidth, int resizedHeight) {
         Image img = icon.getImage();  
         Image resizedImage = img.getScaledInstance(resizedWidth, resizedHeight,  java.awt.Image.SCALE_SMOOTH);  
         return new ImageIcon(resizedImage);
@@ -415,30 +432,60 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 	
 	public void update() {
 		if (!isPause) {
-			player.update(stateBackground.mapDemo);
-			monster.update(stateBackground.mapDemo);
+			for (int i = 0; i < 2; i++)
+				list[i].update(stateBackground.mapDemo);
+			
+			hero.update(stateBackground.mapDemo);
+//			monster.update();
 
-			sensing(player, monster);
+			for (int i = 0; i < 2; i++)
+				sensing(hero, list[i]);
 		}
 	}
 	
 	
-	private void sensing(DarkKnight p, Boss3 m) {
-		if (d(p.selfArea, m.selfArea) < TILE_SIZE*3/2) {
-			m.attacking = true;
-			if (m.f_attack == 0) {
-			if ((p.selfArea[0] + p.selfArea[2])/2.0 < (m.selfArea[0] + m.selfArea[2])/2.0) {
-				m.directionAttack = 180;
+	private void sensing(Entity p, Entity m) {
+		if(m.hp > 0) {
+			if(d(p.selfArea, m.selfArea) < 5*TILE_SIZE) {
+				m.enemyX = p.x + worldx;
+				m.enemyY = p.y + worldy;
+				p.enemyX = m.x;
+				p.enemyY = m.y;
+			}
+			if(d(p.selfArea, m.selfArea) > m.attackRange && d(p.selfArea, m.selfArea) < TILE_SIZE * 5) {		
+				m.provoked = true;
+				m.attacking = false;
+				if(m.selfArea[3] == p.selfArea[3]) {
+					if ((p.selfArea[0] + p.selfArea[2])/2.0 < (m.selfArea[0] + m.selfArea[2])/2.0) {
+						m.direction = 180;
+						m.x -= m.runSpeed;
+					}else {
+						m.direction = 0;
+						m.x += m.runSpeed;
+					}
+				}else {
+					if(m.selfArea[3] > p.selfArea[3]) m.y--;
+					else if(m.selfArea[3] < p.selfArea[3]) m.y++; 
+				}
 			}
 			else {
-				m.directionAttack = 0;
-			}}
-		}
-		else {
-			m.attacking = false;
+				m.provoked = false;
+				if(d(p.selfArea, m.selfArea) <= m.attackRange) {
+					m.attacking = true;
+					if ((p.selfArea[0] + p.selfArea[2])/2.0 < (m.selfArea[0] + m.selfArea[2])/2.0) {
+						m.directionAttack = 180;
+					}
+					else {
+						m.directionAttack = 0;
+					}
+				}else {
+					m.attacking = false;
+					m.f_attack = 0;
+				}
+			}		
 		}
 	}
-
+	
 	private boolean intersec(int[] Area1, int[] Area2) {
 			if (Area1[0] < Area2[2] && Area2[0] < Area1[0] && Area1[1] > Area2[1] && Area1[1] < Area2[3]) return true;
 			if (Area1[2] < Area2[2] && Area2[0] < Area1[2] && Area1[1] > Area2[1] && Area1[1] < Area2[3]) return true;
@@ -475,31 +522,41 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 		return x;
 	}
 	
-	public void playerTakeMeleeAttack(int attack) {
-		if (intersec(player.damageArea, monster.selfArea) || among(player.damageArea, monster.selfArea) || among(monster.selfArea, player.damageArea)) {
+	public void heroTakeMeleeAttack(int []damageArea, int attack) {
+		for (int i = 0; i < 2; i++) {
+		if (intersec(damageArea, list[i].selfArea) || among(damageArea, list[i].selfArea) || among(list[i].selfArea, damageArea)) {
 			System.out.println("attack " + attack );
-			monster.decreHP(attack);
-		}		
+			list[i].decreHP(attack);
+		}	
+		}
 	}
-	public boolean playerTakeRangeAttack(int attack) {
-		if (intersec(player.damageArea, monster.selfArea) || among(player.damageArea, monster.selfArea) || among(monster.selfArea, player.damageArea)) {
+	
+	public boolean heroTakeRangeAttack(int []damageArea, int attack) {
+		for (int i = 0; i < 2; i++) {
+		if (intersec(damageArea, list[i].selfArea) || among(damageArea, list[i].selfArea) || among(list[i].selfArea, damageArea)) {
 			System.out.println("attack " + attack );
-			monster.decreHP(attack);
+			list[i].decreHP(attack);
 			return true;
-		}		
-		
+		}	
+		}
 		return false;
 	}
 	
-	public void monsterTakeAttack(int attack) {
-		if (intersec(monster.damageArea, player.selfArea) || among(monster.damageArea, player.selfArea) || among(player.selfArea, monster.damageArea)) {
+	public void bossTakeAttack(int[] damageArea, int attack) {
+		if (intersec(damageArea, hero.selfArea) || among(damageArea, hero.selfArea) || among(hero.selfArea, damageArea)) {
 			System.out.println("attack " + attack );
-			player.decreHP(attack);
+			if(hero.shieldIsOn) hero.shield -= attack;
+			else hero.decreHP(attack);
 		}
 	}
 
 
 	public void endGame() {
 		endGameBoard.setVisible(true);
+	}
+	
+	public void victory() {
+		victoryBoard.setVisible(true);
+		isPause = true;
 	}
 }

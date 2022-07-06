@@ -24,6 +24,4 @@ public interface GameInterface {
 		public static String TITLE = "GROUP 4";
 		public static int FPS = 60;
 		public static String color = "B16D28";
-		
-
 }

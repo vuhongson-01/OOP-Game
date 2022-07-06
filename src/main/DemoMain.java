@@ -22,7 +22,7 @@ import screen.LevelOptionScreen;
 import screen.LoadingScreen;
 import screen.MoreScreen;
 import screen.OptionScreen;
-import screen.PlayerOptionScreen;
+import screen.HeroOptionScreen;
 import screen.SettingScreen;
 import screen.StartLauncher;
 
@@ -43,7 +43,8 @@ public class DemoMain extends JFrame implements GameInterface{
     GamePanel gamePanel;
     LoadingScreen loadingScreen = new LoadingScreen();
     
-    public int level = 1;
+    public int hard = 1;
+    public int hero = 1;
     
     public DemoMain(){
         initScreen();
@@ -84,7 +85,7 @@ public class DemoMain extends JFrame implements GameInterface{
         optionScreen = new ScreenComponent(new OptionScreen(this), "optionScreen");
         settingScreen = new ScreenComponent(new SettingScreen(this), "settingScreen");
         moreScreen = new ScreenComponent(new MoreScreen(this), "moreScreen");
-        playerOptionScreen = new ScreenComponent(new PlayerOptionScreen(this), "playerOptionScreen");
+        playerOptionScreen = new ScreenComponent(new HeroOptionScreen(this), "playerOptionScreen");
         levelOptionScreen = new ScreenComponent(new LevelOptionScreen(this), "levelOptionScreen");
         
         mainPanel.add(loadingScreen, "loadingScreen");

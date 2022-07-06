@@ -35,6 +35,7 @@ public class LevelOptionScreen extends JPanel implements GameInterface{
     DemoMain main;
     JPanel bgr;
     ImageIcon icon;
+    public static int hard = 1;
     
     public LevelOptionScreen(DemoMain main) {
     	setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
@@ -111,7 +112,7 @@ public class LevelOptionScreen extends JPanel implements GameInterface{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				main.level = 1;
+				main.hard = 1;
 				checkEasyBtn.setVisible(true);
 				checkHardBtn.setVisible(false);
 			}
@@ -122,7 +123,7 @@ public class LevelOptionScreen extends JPanel implements GameInterface{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				main.level = 2;
+				main.hard = 2;
 				checkEasyBtn.setVisible(false);
 				checkHardBtn.setVisible(true);
 			}
