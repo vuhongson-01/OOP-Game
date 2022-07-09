@@ -127,6 +127,7 @@ public class GamePanel extends JPanel implements Runnable, GameInterface{
 			worldx = 0;
 			worldy = 0;
 		}
+		
 	}
 	
 	void setupButton(JButton button, String iconPath, int width, int height, int x, int y) {
